@@ -1,0 +1,4 @@
+Montréal
+cos(2α) = cos²α - sin²α
+sin(α)sin(β) = ½(cos(α - β) - cos(α + β))
+∀x.(P(x) ∧ Q(x)) → ∃y.(P(y) ∧ ¬R(y))

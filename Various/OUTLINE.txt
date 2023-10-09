@@ -1,0 +1,75 @@
+
+CIS-3152 Outline
+(C) Copyright 2012 by Peter Chapin
+==================================
+
++ Course introduction, discussion of VTC network topology, addresses of the machines we will be
+  using, etc. Talk about HackBox and how it is organized. Talk about some of the tools installed
+  on HackBox (network analyzer, compilers, etc). See Lab #1.
+
++ TCP/IP client/server programming using the Sockets API on Unix and Windows using C. Discuss
+  both iterative and concurrent servers. Talk about TCP connection creation and destruction.
+  Talk about basic TCP protocol (sequence numbers, action of the window, congestion avoidance,
+  retransmission and timeout algorithms). See Labs #2 and #3.
+
++ UDP client/server programming using TFTP. This also helps to illustrate some of the reasons
+  why a more complex protocol like TCP is often desirable. See Lab #4.
+
++ Advanced TCP/IP topics (time allowing): Interactive issues for TCP. Nagle's algorithm. Silly
+  window syndrome.
+
+It might be fun one year to construct our own transport layer protocol. See VTP.txt for some
+possible ideas.
+
++ IPv6. Use a discussion of IPv6 as a vehicle for also reviewing IPv4. Contrast the two
+  protocols and explain the motivation for IPv6. See Lab #5.
+
++ Character set issues. ISO 8859-x, ISO 2022, Unicode (UTF-8, UTF-16, UTF-32). Describe why this
+  matters in a networking course by pointing out that communicating applications must often
+  agree on the character set they are using.
+
++ A suitable higher level protocol to demonstrate how the client server programming. I suggest
+  SMTP (relatively simple, important, practical). Have the students read RFC 5321. See Lab #6.
+
++ Go up another level in the protocol stack by looking at RFC 5322... the format of the the
+  messages transported in mail systems. Emphasize that this is a higher level protocol than
+  SMTP.
+
++ The MIME standard, especially multipart messages. Illustrate the similarity of concerns
+  between this high level protocol and lower level protocols (such as message fragmentation).
+  See Lab #7.
+
++ XML. Illustrate the use of XML as a way for applications to shared structured data. Point out
+  that XML is, in effect, an even higher level protocol than something like HTTP. Discuss XML
+  namespaces and XML schemas. Discuss processing XML with SAX.
+
++ Ice. Distributed object technology in general, Ice in particular. There is a lot that could be
+  said about this. See Lab #9.
+
+
+Other topics to consider for possible future additions to the course:
+
++ Network directories (LDAP, NDS, ADS, JNDI). Also NIS? It would be nice to play around with a
+  "real" directory server via the LDAP API and/or the JNDI.
+
++ RPC. Talk about the idea of RPC as well as some specifics of how Sun's RPC work. This includes
+  the use of rpcgen and XDR. Discuss NFS as an example of RPC (statelessness of NFS, kernel to
+  kernel communications, NFS daemons, and RPC authentication methods). See Lab #8. (NOTE: I find
+  that there is not usually sufficient time to talk about NFS)
+
++ File server protocols (NCP, CIFS/SMB). Remote file access protcols are quite important. Also,
+  although I do mention NFS in my current RPC presentation, this topic could be elaborated on
+  significantly.
+
++ NDIS
++ Streaming protocols (audio/video)
++ Other application protocols: HTTP, ESMTP, FTP, NNTP, Telnet.
++ X Windows.
++ Print service protcols (lpd?)
++ Routing protocols (RIP, RIP2, OSPF, other?)
++ Network management SNMP.
++ ATM networks.
++ OSI protocols
++ IPX/SPX
++ Multicasting IGMP
++ ICMP (I discuss this some during the first third of the course)

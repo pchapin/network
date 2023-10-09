@@ -1,0 +1,4 @@
+<Project projectName="MailFlux">
+  <Jar>..\..\build\production\MailFlux\org</Jar>
+  <SrcDir>.\src</SrcDir>
+</Project>

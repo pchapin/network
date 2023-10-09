@@ -1,0 +1,19 @@
+
+Functionality: 15
+-------------
+
++ (8) Looks up names correctly (morning.ecet.vtc.edu)
++ (1) Looks up names correctly (www.google.com)
++ (2) Handles invalid names (xyz.ecet.vtc.edu)
++ (2) Handles invalid IP address for name server (155.42.13.19) Hanging okay.
++ (2) Handles invalid IP address for name server (300.300.300.300)
+
+Report + Program Style: 15
+----------------------
+
++ (1) Followed ECET style.
++ (2) Linked objective and conclusion.
++ (2) Overview of DNS protocol.
++ (6) Description of program structure.
++ (2) Description of testing procedure.
++ (2) Program commenting and formatting.

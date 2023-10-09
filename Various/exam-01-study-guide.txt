@@ -1,0 +1,34 @@
+
+CIS-3152, Exam #1 Study Guide
+=============================
+
+The following is a list of topics that may appear on Exam #1
+
++ Sockets API on Unix
+  - socket()  [also struct sockaddr_in, struct sockaddr]
+  - inet_pton()/inet_ntop()
+  - connect()
+  - read()/write()
+  - bind()/listen()
+  - accept()
+  
++ Concurrent TCP servers on Unix
+  - When should they be used? When are iterative servers okay?
+  - fork()
+  
++ TCP states
+  - State diagram
+  - What states might one see with netstat? What states would be unusual?
+  - Which system calls correspond to which state transitions?
+  
++ TCP details
+  - What is a windowed protocol? Why bother with it?
+  - What does the window size TCP header field mean? Who modifies/sets it and why?
+  - Congestion window
+  - Intelligent timeouts
+  
++ UDP
+  - How does UDP differ from TCP?
+  - When is it appropriate to use UDP? When is it not appropriate?
+  - Differences between UDP programming and TCP programming.
+  

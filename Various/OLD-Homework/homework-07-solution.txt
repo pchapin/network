@@ -1,0 +1,71 @@
+
+CIS-3152: Worksheet #7 Answers.
+(C) Copyright 2007 by Peter C. Chapin
+=====================================
+
+1.
+
+> Suppose you wanted to write an RPC server that managed a simple database.
+> Your server is to provide a procedure named update_account that takes a
+> name as an arbitrary string, an account ID number as a 32 bit integer,
+> and a new balance value as two 32 bit integers (one for dollars and the
+> other for cents). Show a full specification for this server (and its one
+> and only procedure) in the RPC language discussed in class. In
+> particular, show an appropriate .x file that would be acceptable to
+> rpcgen.
+
+typedef string name_t<>;
+
+struct update_args {
+  name_t name;
+  int    ID;
+  int    dollars;
+  int    cents;
+};
+
+program ACCOUNTS {
+  version ACCOUNTS_VER {
+    int UPDATE_ACCOUNT(update_args) = 1;
+  } = 1;
+} = 0x30009000;
+
+2.
+
+> Show the XDR form of the data sent over the network by the client to the
+> server when the name is "Chapin", account ID is 0x12345678, and new
+> balance is $21.15. I'm only interested in the procedure parameters
+> here---not the RPC call header. Be sure to indicate any counts and
+> padding bytes appropriately.
+
+The struct update_args is sent in member order. The name is a variable
+length string (padded to have a length that is a multiple of four). Bytes
+are sent in big endian order. In the listing below each member is shown
+separately. However, the data is streamed without any breaks or delimiters.
+
+00 00 00 06 'C' 'h' 'a' 'p' 'i' 'n' 00 00
+12 34 56 78
+00 00 00 15
+00 00 00 0F
+
+3.
+
+> Abstract syntax notation number 1 (ASN.1), together with the BER encoding
+> rules, plays a role similar to that played by XDR. One significant
+> difference between XDR and ASN.1/BER is that in BER each value is
+> preceeded by a field indicating the type of that value. Comment on the
+> advantages and disadvantages of these two approaches.
+
+Advantage: The data stream is more "self-describing." This reduces the
+amount of information that must be shared between client and server ahead
+of time. So while the client and server must still agree on the meaning of
+the data being transmitted, the exact type of that data can be left open
+and discovered at run time. This opens the possibility of having the types
+change without having to modify and redeploy the programs. (Although
+writing programs that acutally work this way is more complicated.) This is
+particularly useful if just one side is updated to use different types; the
+other side can just adapt.
+
+Disadvantage: The type information increases the overhead in the data
+stream. In the common case where the client and server already know what
+types to expect, that overhead just needlessly reduces the effective
+bandwidth of the transmission.

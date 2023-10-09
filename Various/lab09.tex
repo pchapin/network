@@ -1,0 +1,170 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE         : lab09.tex
+% AUTHOR       : (C) Copyright 2012 by Peter C. Chapin
+% LAST REVISED : 2012-04-08
+% SUBJECT      : Chatter
+%
+% In this lab the students will experiment with Ice.
+%
+%       Peter C. Chapin
+%       Computer Information Systems Department
+%       Vermont Technical College
+%       Randolph Center, VT. 05061
+%       PChapin@vtc.vsc.edu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ++++++++++++++++++++++++++++++++
+% Preamble and global declarations
+% ++++++++++++++++++++++++++++++++
+\documentclass[twocolumn]{article}
+% \pagestyle{headings}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+% +++++++++++++++++++
+% The document itself
+% +++++++++++++++++++
+\begin{document}
+
+% ----------------------
+% Title page information
+% ----------------------
+\title{CIS--3152 Lab \#9\\Chatter}
+\author{\copyright\ Copyright 2012 by Peter C. Chapin}
+\date{Last Revised: April 8, 2012}
+\maketitle
+
+\section*{Introduction}
+
+In this lab you will work on a simple instant messaging system called \textit{Chatter}. In
+Chatter each user runs a server that accepts lines of text for that user. In addition each user
+runs a client to send text to other users. In our implementation the server and client are
+independent processes.
+
+In order for users to find each other on the network, the Chatter system makes use of a name
+service. Each Chatter object connects to the name service and registers its proxy under the
+user's nickname. When a client wants to chat with a particular user, the client program looks up
+the user's proxy from the name service using the nickname as the key.
+
+\section{Trying Chatter}
+
+Your first step should be to try out the existing Chatter system. Checkout Chatter from its
+Subversion repository using the Subversion URL of
+\begin{verbatim}
+svn://whirlwind.cis.vtc.edu/Chatter
+\end{verbatim}
+
+You can build Chatter on either a 64 bit Linux system using gcc (the Ice libraries are installed
+on \texttt{lemuria}) or on 32 bit Windows using Microsoft Visual C++. Once you have checked out
+the Chatter source, build the makefile in the root of the \texttt{Ice} folder to create the
+entire system as it currently exists. Note that if you are using Windows you will need to use
+Microsoft's \texttt{nmake} tool to do the build (not Visual Studio). For example in a ``Visual
+Studio 2008 Command Prompt'' window execute
+\begin{verbatim}
+nmake /f Makefile.win32
+\end{verbatim}
+
+A Chatter name server is already running on the host \texttt{vortex.cis.vtc.edu} on the default
+Chatter name service port of 9010 (this port value is hard coded into the various Chatter sample
+programs). In addition a Chatter room server is also running on the network under the name
+``VTC.'' Note that it has registered itself with the name server so the exact location where it
+is running is not relevant.
+
+Do the following to start experimenting with Chatter.
+
+\begin{enumerate}
+
+\item In one window bring up the Chatter ``server'' program. You will need to provide it with
+  the nickname you would like to use on the network, the name of the host where the name server
+  is running, and the TCP port you would like it to use. Messages to this name will be delivered
+  to your server window. For example
+\begin{verbatim}
+server Peter vortex.cis.vtc.edu 9000
+\end{verbatim}
+
+  \emph{If you are using the lab Windows systems you may need to unblock the specified port on
+    the firewall. If you are using \texttt{lemuria} you should use one of the port addresses
+    that has been allocated to you for this course.}
+
+\item In a separate window bring up the Chatter ``client'' program. You will need to provide it
+  with the name of the host where the name server is running. For example
+\begin{verbatim}
+client vortex.cis.vtc.edu
+\end{verbatim}
+
+  Once the client is running you can use the \texttt{/name} command to set the nickname you want
+  to use on your outgoing messages. Ordinarily this would be the same nickname that you are
+  using with your server (which receives incoming messages) but the Chatter system does not
+  require this\footnote{However, you \emph{must} use the same name in order for the chat rooms
+    to work in a reasonable way!}. You can now use the \texttt{/msg} command to send messages to
+  other Chatter uses. Use the \texttt{/help} command for a complete list of supported commands.
+
+\item Use the \texttt{/rooms VTC} command to select the room manager named ``VTC.'' Use the
+  \texttt{/create} or \texttt{/join} commands to create a new chat room or to join an existing
+  chat room. You can use the \texttt{/list} command to get a list of the existing chat rooms.
+
+\end{enumerate}
+
+\section{Garble Filtering}
+
+To illustrate the flexibility of this system you will next implement a Chatter filter class that
+garbles text by applying a ROT13 encoding to it. You will set up an instance of the garble
+filter to be an ordinary Chatter receiver that passes its output to a particular chat room
+(named ``garble''). Ordinary users who join this chat room will be able to chat among themselves
+normally, but any text sent to the garble filter will be broadcast to the entire room in ROT13
+encoded form. While this application is rather silly, one could imagine the filter performing
+some useful transformation on the incoming text.
+
+\begin{enumerate}
+
+\item Add the files \texttt{Garble.h} and \texttt{Garble.cpp} to the Chatter library folder. In
+  \texttt{Garble.h} provide the declaration of class \texttt{Garble\_impl} that derives from
+  \texttt{Chatter::TextFilter}. See \texttt{TextSink.h} for ideas about how to do this. In
+  \texttt{Garble.cpp} implement the necessary methods to ROT13 encode each input line and pass
+  the result on to the output. See the attached file \texttt{rot13.cpp} for a function that does
+  ROT13 encoding. Modify the makefile(s) so that your new additions to the Chatter library are
+  built when the rest of the system is built.
+
+\item Create a new program in the \texttt{programs} folder named \texttt{garbler}. Your program
+  should do the following.
+
+\begin{enumerate}
+
+\item Initialize Ice and create an object adapter. Create an instance of \texttt{Garble\_impl}
+  and attach it to the adaptor. See \texttt{server.cpp} for specifics.
+
+\item Look up the `garble' room on the VTC room manager (you will need to use the name server to
+  get a proxy to the room manager) and connect the output of your garble filter to the garble
+  room. See \texttt{client.cpp} for specifics.
+
+\item Create a makefile so that your new program is built when the rest of the system is built.
+  Copy the makefile from one of the existing programs to get started. Also modify the top level
+  makefile appropriately.
+\end{enumerate}
+
+\end{enumerate}
+
+When you are done with the steps above you should be able to issue a make operation at the top
+level of the source tree and have it build your new garble filter class and garbler program.
+
+\section{Demonstration}
+
+Now demonstrate your system by bringing up your garbler program and having it register itself
+with the name server under a special nickname (perhaps something like ``Peter-garble''). Run
+your normal client and server programs and join the garble chat room. You should find that any
+text sent to the garble filter appears in the chat room in ROT13 encoded form.
+
+Note that this system illustrates the interaction of several programs working as peers. The
+garbler program is particularly interesting because it is both a server and a client. The
+various programs in the system communicate by invoking methods on each other's objects by way of
+special pointers (called ``proxies'' in Ice terminology) that can effectively point at objects
+on other machines. You should reflect on what would be involved in implementing this system
+using traditional network programming techniques such as we discussed at the beginning of this
+course.
+
+\section{Report}
+
+Write a formal report for this lab that describes how your extensions to the Chatter system
+work. Include a listing of your changes to the source files.
+
+\end{document}

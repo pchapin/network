@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+  <title>CIS-3152 Homework #7</title>
+  <meta content="Peter C. Chapin" name="author" />
+</head>
+<body>
+<h1>CIS-3152 Homework #7</h1>
+
+<p>This worksheet covers Sun's RPC protocol. The two RPC RFCs are RFC-1831, "RPC: Remote
+  Procedure Call Protocol Specification Version 2" and RFC-1832, "XDR: External Data
+  Representation Standard".</p>
+
+<ol>
+  <li><p>Suppose you wanted to write an RPC server that managed a simple database. Your server
+    is to provide a procedure named <code>update_account</code> that takes a name as an
+    arbitrary string, an account ID number as a 32 bit integer, and a new balance value as two
+    32 bit integers (one for dollars and the other for cents). Show a full specification for
+    this server (and its one and only procedure) in the RPC language discussed in class. In
+    particular, show an appropriate .x file that would be acceptable
+    to <code>rpcgen</code>.</p></li>
+
+  <li><p>Show the XDR form of the data sent over the network by the client to the server when
+    the name is "Chapin", account ID is 0x12345678, and new balance is $21.15. I'm only
+    interested in the procedure parameters here---not the RPC call header. Be sure to indicate
+    any counts and padding bytes appropriately.</p></li>
+
+  <li><p>Abstract syntax notation number 1 (ASN.1), together with the BER encoding rules, plays
+    a role similar to that played by XDR. One significant difference between XDR and ASN.1/BER
+    is that in BER each value is preceeded by a field indicating the type of that value. Comment
+    on the advantages and disadvantages of these two approaches.</p></li>
+</ol>
+
+<hr style="width: 100%; height: 2px;" />
+<address>
+  © Copyright 2012 by <a href="mailto:PChapin@vtc.vsc.edu">Peter C. Chapin</a><br/>
+  Last Revised: 2012-04-08 
+</address>
+</body>
+</html>

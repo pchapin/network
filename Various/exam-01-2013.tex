@@ -1,0 +1,165 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE         : exam-01.tex
+% AUTHOR       : (C) Copyright 2013 by Peter C. Chapin
+% LAST REVISED : 2013-03-17
+% SUBJECT      : Exam #1 for CIS-3152
+%
+% Send comments or bug reports to:
+%
+%       Peter C. Chapin
+%       Computer Information Systems
+%       Vermont Technical College
+%       Williston, VT 05495
+%       PChapin@vtc.vsc.edu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{examdesign}
+
+% Options.
+\Fullpages
+\NoRearrange
+% \NoKey
+\NumberOfVersions{1}
+
+% Class and exam information.
+\class{CIS-3152}
+\examname{Exam \#1}
+
+% This setting seems to be ignored (in the answer key at least).
+% \setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+\begin{document}
+
+% I can't seem to be able to use namedata@vspace below (see documen-
+% tation). I can use the default \namedata but I can't seem to redefine
+% \namedata to suite my needs.
+%
+\begin{examtop}
+  \parbox{3in}{\classdata \\
+               \examtype, Form: \fbox{\textsf{\Alph{version}}}}
+  \hfill
+  \parbox{3in}{\normalsize Name: \hrulefill \\[2.0ex]
+                           Date: \hrulefill }
+  \bigskip
+\end{examtop}
+
+\textit{This is a take-home exam. Do not work with anyone else on the exam or post questions
+  about the exam to any Internet forums, etc. You can use any other resources including the
+  text, your notes, or documents you find online (including old forum discussions started by
+  others). Please include a URL for any Internet resources you use. If you have any questions
+  about the exam, feel free to contact me.}
+
+\begin{shortanswer}
+
+  % Sockets programming.
+  \begin{question}
+    The call to \texttt{connect()} in a typical sockets based TCP program uses a second argument
+    that looks like \texttt{(struct sockaddr *) \&server\_address} where
+    \texttt{server\_address} is a \texttt{struct sockaddr\_in}. Why is the complicated type
+    conversion necessary? In other words: why wasn't \texttt{connect()} declared to take a
+    \texttt{struct sockaddr\_in *} in the first place?
+
+    \begin{answer}
+      The sockets API was designed to work with many different protocol families. Each protocol
+      family has its own way of addressing nodes and thus has its own socket address structure.
+      The \texttt{connect()} function must be able to take a pointer to any of these structure
+      types. To deal with that in C, \texttt{connect()} has been declared as taking a pointer to
+      a generic structure with the understanding that the caller can send in a pointer to any of
+      the supported structures (by using an appropriate type cast).
+    \end{answer}
+  \end{question}
+
+%\pagebreak
+
+  % Iterative vs concurrent servers.
+  \begin{question}
+    What is the advantage of using a concurrent TCP server? On the other hand, under what
+    conditions would it be appropriate to use an iterative TCP server?
+
+    \begin{answer}
+      A concurrent server is able to service multiple connections at the same time. This is
+      essential in cases where the time required to service a connection is long or outside the
+      control of the server. For example if the client intends to download a large file or if
+      the server is concerned that a client might connect and then wait indefinitely before
+      issuing any commands, the server should be a concurrent server.
+
+      An iterative server is appropriate in cases where the time required to service a
+      connection is short and totally under the control of the server. For example in the
+      daytime protocol, as soon as the client connects, the server sends a short string and then
+      does the active close. There is nothing the client can do to extend the connection time.
+      An iterative server works in this case and is easier to write.
+    \end{answer}
+  \end{question}
+
+%\pagebreak
+
+  % TCP state diagram.
+  \begin{question}
+  	Answer two of the three questions below.
+    \begin{enumerate}
+    \item When a client program calls \texttt{connect()}, what state or states in the TCP state
+      diagram does the connection touch?\footnote{By ``touch'' I mean ``pass through'' or ``end
+        up in.''} You can assume normal, error free behavior.
+    \item What is the difference between ``active close'' and ``passive close?''
+    \item What sequence of states does the TCP connection touch when the side doing the passive
+      close calls \texttt{close()}? You can assume normal, error free behavior.
+    \end{enumerate}
+    
+    \begin{answer}
+    \begin{enumerate}
+    
+    \item When calling \texttt{connect()} the client passes through the SYN\_SENT state and ends
+      up in the ESTABLISHED state.
+    \item The side that does the active close is the side that initially calls \texttt{close()}
+      to end a connection. This side sends the first FIN segment. The side that does the passive
+      close acknowledges the initial FIN segment. It then later calls \texttt{close()} as well
+      to send a FIN segment of its own.
+    \item When the passive side calls \texttt{close()} it starts in CLOSE\_WAIT and passes
+    through LAST\_ACK.
+    \end{enumerate}
+    \end{answer}
+  \end{question}
+
+%\pagebreak
+
+  % UDP
+  \begin{question}
+    UDP is an unreliable protocol. However, some services are most appropriately implemented as
+    UDP services rather than using the more reliable TCP (DNS and TFTP are like this). Give at
+    least one \emph{advantage} that UDP has over TCP in these cases. Under what conditions is
+    the unreliability of UDP not an issue?
+
+    \begin{answer}
+      UDP's advantage over TCP is its lower overhead. This is particularly significant if the
+      messages being exchanged are small. UDP works well when a client's request and the
+      server's reply both fit into a single datagram, and when the service being provided has
+      the property of being idempotent. UDP is also a good choice in cases where its
+      unreliability is not an issue such as streaming media (where lost data degrades the
+      quality of the service but does not cause an outright failure of the service).
+    \end{answer}
+  \end{question}
+
+%\pagebreak
+
+  % UDP Programming
+  \begin{question}
+    A program that uses UDP will use the \texttt{sendto()} and \texttt{recvfrom()} functions
+    instead of the \texttt{send()}/\texttt{recv()} or \texttt{write()}/\texttt{read()} functions
+    that a TCP based program would use. The \texttt{sendto()} and \texttt{recvfrom()} functions
+    both take a pointer to a sockaddr structure as a parameter. What is the purpose of this
+    parameter and why do the UDP functions require it while the TCP functions do not?
+
+    \begin{answer}
+      The address of the remote host is provided to (or from) TCP when the connection is
+      established (during \texttt{connect()} for the client or \texttt{accept()} for the
+      server). Since that address remains the same for the duration of the connection there is
+      no need to provide it again during the read/write operations.
+
+      In contrast UDP does not have connections. Thus the address of the remote host must be
+      provided to (or obtained from ) each read/write operation separately. This is the purpose
+      of the sockaddr structure mentioned above.
+    \end{answer}
+  \end{question}
+
+\end{shortanswer}
+\end{document}

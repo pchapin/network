@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CharConverter:jar">
+    <output-path>$PROJECT_DIR$/build/artifacts</output-path>
+    <root id="archive" name="CharConverter.jar">
+      <element id="module-output" name="CharConverter" />
+    </root>
+  </artifact>
+</component>

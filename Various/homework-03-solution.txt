@@ -1,0 +1,63 @@
+
+CIS-3152: Homework #3 Solution.
+(C) Copyright 2015 by Peter C. Chapin
+=====================================
+
+2.
+
+> What is the "Silly Window Syndrome" and why is it bad? See RFC-813.
+
+Silly Window Syndrome occurs when the receiver sends an acknowledgement that contains a small
+window size and the sender responds by right away sending a correspondingly small segment. This
+can happen if the receiver process is consuming data in small chunks with a nearly full buffer
+or if the sending process believes that nearly a full window size is in transit. In either case
+only small segments get sent despite the large buffers that might be present on either end of
+the connection, and network throughput is greatly impaired.
+
+3.
+
+> Suppose a sequence of segments are sent with the following round trip times: 10ms, 12ms, 9ms,
+> 21ms, 10ms. Using the two methods described in class, what would TCP's estimate of the round
+> trip time be after the last segment? What time-out interval would it use at that point? Use
+> the first measured round trip time for the initial value of the round trip estimate. Use zero
+> for the initial estimate of the deviation.
+
+Old Method
+==========
+
+R <- A*R + (1 - A)*M
+  R: Current estimate of round trip time.
+  M: Last measured time.
+  A: Weighting factor (0.9)
+
+R_old   M       R_new
+---------------------
+10ms    10ms    10ms
+10ms    12ms    10.2ms
+10.2ms   9ms    10.1ms
+10.1ms  21ms    11.2ms
+11.2ms  10ms    11.1ms
+
+Thus the final estimate of round-time time is 11.1ms. Note that this computation used the
+initial measurement as the initial estimate.
+
+The timeout interval is 2*R. At the end of the sequence above this comes to 22.2ms.
+
+New Method
+==========
+
+E <- M - R
+R <- R + g*E          (with g = 1/8)
+D <- D + h*(|E| - D)  (with h = 1/4)
+
+R_old   D_old   M       E       R_new   D_new
+---------------------------------------------
+10ms    0ms     10ms    0ms     10ms    0ms
+10ms    0ms     12ms    2ms     10.2ms  0.5ms
+10.2ms  0.5ms    9ms    -1.2ms  10ms    0.7ms
+10ms    0.7ms   21ms    11ms    11.4ms  3.3ms
+11.4ms  3.3ms   10ms    -1.4ms  11.2ms  2.8ms
+
+Thus the final estimate of round-trip time is 11.2ms.
+
+The timeout interval is R + 4*D = 22.4ms.

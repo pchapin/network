@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+  <title>CIS-3152 Homework #8</title>
+  <meta content="Peter C. Chapin" name="author" />
+</head>
+
+<body>
+<h1>CIS-3152 Homework #8</h1>
+
+<p>This worksheet covers distributed applications using Ice. As a
+reference use your class notes and  the Ice documentation (which can be
+downloaded from <a href="http://www.zeroc.com">http://www.zeroc.com</a>).</p>
+<ol>
+  <li><p>Suppose you wanted to implement a file server with an Ice interface.
+    Using the slice interface definition language, write the specification
+    for an interface <code>File</code> that allows read access to a file. The
+    interface should include a <code>close</code> method as well. Also write
+    the specification for an interface <code>FileServer</code> that has an
+    <code>open</code> method returning a proxy to a <code>File</code>
+    instance.<code></code></p>
+  </li>
+  <li><p>Show C++ class definitions for classes <code>File_impl</code> and
+    <code>FileServer_impl</code> that you might create to implement the
+    interfaces described in the first question. You do not need to implement
+    the methods themselves.</p>
+  </li>
+  <li><p>On the Zeroc web site there are two documents comparing Ice with 
+    CORBA and with SOAP (Web Services). Go to their site and pull down the
+    "Ice" menu on the menu bar. Read those documents and write a short
+    paragraph summarizing their main points.</p>
+  </li>
+  <li><p>Ice (and similar technologies) involve allocating objects on various
+    nodes in the network and passing references (called "proxies" in Ice)
+    over the network to other nodes. Cleaning up allocated objects can be
+    done explicitly or alternatively by using a distributed garbage
+    collection algorithm. However, distributed garbage collection is hard
+    (Ice doesn't do it). Why is it hard?</p>
+  </li>
+</ol>
+<hr style="width: 100%; height: 2px;" />
+<address>
+  © Copyright 2008 by Vermont Technical College<br />
+  Last Revised: 2008-04-27
+</address>
+</body>
+</html>

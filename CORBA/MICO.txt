@@ -1,0 +1,97 @@
+
+Using MICO with Microsoft's Visual Studio
+(C) Copyright 2003 by Peter C. Chapin
+Last Revised: 2003-11-30
+=========================================
+
+This document describes how to configure Visual Studio .NET 2003 for MICO programming. Each
+project in a solution that uses MICO needs this configuration. When writing CORBA systems it is
+not unusual to have multiple projects in one solution. For example, you might have the client
+as one project and the server as another. I suggest you create a folder for the solution and
+then separate folders beneath it for each project. Files that are common to all projects (such
+as the IDL files) can be put into the solution folder. You want to avoid making multiple copies
+of a file; if the file needs to change it is too easy to forget to update one of the copies.
+
++ In solution explorer, right click on the relevant project and select
+  "Properties".
+
++ Under C/C++|General add the MICO include directories to "Additional
+  Include Directories". These directories are mico\include and mico\
+  include\windows in the main MICO source tree. The names are semicolon
+  delimited. Use full paths (not relative paths).
+
++ Under C/C++|General turn off 64 bit portability warnings. This is
+  optional but it reduces the number of warnings produced for cases
+  where a size_t is put into a CORBA::Long (this won't work when size_t
+  is 64 bits so when 64 bit Windows comes along MICO will need fixing).
+
++ Under C/C++|Code Generator select "Multi-threaded DLL (/MD)" as the
+  runtime library. By default MICO is built with the non-debugging
+  runtime library; it is important to be consistent with that. Subtle
+  bugs arise if you attempt to use two different versions of the run
+  time library in the same program.
+
++ Under Linker|General add the MICO library directory to "Additional
+  Library Directories". This directory is mico\win32-bin\lib in the main
+  MICO source tree. Use the full path (not a relative path).
+
++ Under Linker|Input add the library files mico2311.lib and ws2_32.lib
+  to the "Additional Dependencies" list. The names are space delimited.
+
+-----
+
+If you have an IDL file (and you probably do), add it as a source file for the project and
+follow the steps below. Keep in mind that IDL files are recognized by Visual Studio. However,
+they are assumed to be Microsoft IDL (MIDL), not OMG's IDL. The two interface definition
+languages are different. The steps below "teach" Visual Studio how to compile OMG-IDL files.
+
++ Open the property sheet for the IDL file and change the General|Tool
+  option to "Custom Build Tool". Select "OK". This should cause a "Custom
+  Build Step" folder to replace the "MIDL" folder that was there before.
+
++ Under Custom Build Step|Command Line enter something like
+
+     idl --c++-suffix=cpp $(InputPath)
+
+  to build client-side files. You will also want to add $(InputName).h
+  and $(InputName).cpp to the "Output Files" section. The names are
+  semicolon delimited. You will also want to add the generated files
+  as source files of the project. This information allows Visual Studio
+  to deduce when the IDL file needs to be (re)compiled.
+
+  Use
+
+     idl --c++-suffix=cpp --c++-skel $(InputPath)
+
+  to build server-side skeleton files. You will also want to add
+  $(InputName).h, $(InputName).cpp, and $(InputName)_skel.cpp to the
+  "Output Files" section. The names are semicolon delimited. You will
+  also want to add the generated files as source files of the project.
+
+This assumes that MICO's idl compiler (and associated DLL) are in the PATH. Also to run MICO
+programs you will need to be sure that mico2311.dll is in the PATH.
+
+NOTE: The $(InputPath) macro expands to the absolute path of the input file. If your IDL file
+is in a folder with an absolute path containing spaces, MICO's idl compiler gets confused. To
+deal with this problem you may want to use the $(InputFileName) macro instead. However, in that
+case if the IDL file is in a different folder from the project (for example, the solution
+folder) you will need to add a relative path explicitly. For example: ..\$(InputFileName)
+instead of $(InputPath).
+
+-----
+
+The CORBA standard makes use of C++ exception specifications. However, Visual C++ currently
+does not implement this C++ feature fully. As a result, Visual C++ produces a warning message
+every time it encounters a use of an exception specification in the source file. This is not a
+serious problem; it would only be relevant if the method with the exception specification tries
+to throw an unexpected exception. In theory that shouldn't happen anyway. To avoid the warnings
+you can put
+
+     #pragma warning(disable:4290)
+
+at the top of your program. This informs the compiler that you wish to disable warning #4290
+only. In this way you can avoid the spurious warnings while still seeing any other warnings the
+compiler might produce.
+
+C++ compilers should ignore pragmas they don't recognize so this pragma can also be included in
+the Unix version of your program without any harm.

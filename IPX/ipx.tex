@@ -1,0 +1,115 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE         : ipx.tex
+% AUTHOR       : Peter Chapin
+% LAST REVISED : April 28, 2000
+% SUBJECT      : IPX programming problem for EL-330
+%
+%
+% Send comments to Peter Chapin (pchapin@night.vtc.vsc.edu) or at the
+%   snail mail address of:
+%
+%       Peter Chapin
+%       Vermont Technical College
+%       Main Street
+%       Randolph Center, VT. 05061
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ++++++++++++++++++++++++++++++++
+% Preamble and global declarations
+% ++++++++++++++++++++++++++++++++
+\documentclass{article}
+% \pagestyle{headings}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+% +++++++++++++++++++
+% The document itself
+% +++++++++++++++++++
+\begin{document}
+
+% ----------------------
+% Title page information
+% ----------------------
+\title{IPX Programming Problem}
+\author{Peter Chapin}
+\date{Last Revised: April 28, 2000}
+\maketitle
+
+\section{Introduction}
+
+This document describes a programming problem that will give you some
+direct exposure to how the IPX protocol is handled by the software on a
+network station. In this exercise, you will use the Novell NetWare
+Software Development Kit (SDK). This package contains a large number of
+functions for interacting with NetWare networks. Since NetWare uses IPX,
+Novell supports the protocol fully in their products.
+
+\section{Preliminaries}
+
+The NetWare SDK provides libraries suitable for linkage to programs
+compiled with either Borland C++ or Microsoft's Visual C++. It does not
+appear to be an easy matter to uses these libraries with programs
+compiled with Watcom C++. It may be possible to arrange it, but doing so
+would be more work than we want to do at this time.
+
+To use Borland C++ v4.52 on our network, type the following.
+
+\begin{verbatim}
+use bcpp
+\end{verbatim}
+
+The command line compiler is ``bcc.''
+
+The NetWare SDK itself is located in s:$\backslash$ec$\backslash$nwsdk.
+The documentation is in Windows help files. Consult the help for 16 bit
+clients (we will be creating an MS-DOS program).
+
+When you compile a program that uses the SDK, you will need to direct
+the compiler to scan the SDK's include directory. This is where the
+various header files are located. That directory is
+s:$\backslash$ec$\backslash$nwsdk$\backslash$include. Use the ``-I''
+command line option on the compiler to specify this directory.
+
+When you link your program, you must also tell the linker to scan over
+the appropriate LIB file that contains the executable code for the
+functions you want to use. This file is
+s:$\backslash$ec$\backslash$nwsdk$\backslash$lib$\backslash$dos$\backslash$borland$\backslash$SNWIPXSP.LIB.
+Mention this file on the command line to cause the linker to scan over
+it.
+
+Finally you also need to \#define the symbol {\tt NWDOS} so that the
+proper declarations in the SDK header files will be seen by the
+compiler. The NetWare SDK supports programming under DOS, Windows,
+Win95, WinNT, and OS/2. It is necessary to specify the platform so that
+platform specific matters can be properly handled in the header files.
+Putting all this together leads to a rather long command line.
+
+\begin{verbatim}
+bcc -DNWDOS -Is:\ec\nwsdk\include myprog.c \
+  s:\ec\nwsdk\lib\dos\borland\snwipxsp.lib
+\end{verbatim}
+
+You may want to create a batch file to simplify your life.
+
+\section{The Programs}
+
+Attached you will find the programs sendfile.c and recvfile.c. Modify
+recvfile so that it properly terminates when it received the zero code.
+Compile the programs and try them out. You will have to change the
+network number to 22 (for G-111) and the node number to an appropriate
+value for one of the stations in that lab. Be sure to only send text
+files using these programs.
+
+You should notice that when sending large files, some data is lost. This
+is because there is no flow control in these programs. To deal with this
+issue, modify the programs so that the receiver sends an acknowledgement
+packet back to the sender for each packet it receives. The sender should
+not send another packet until it gets the acknowledgment.
+
+You can copy the {\tt Recv} function from the receiver into the sender
+program. You will also have to copy significant parts of the sender into
+the receiver program as well so that the receiver can send an
+acknowledgment.
+
+\end{document}

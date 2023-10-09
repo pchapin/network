@@ -1,0 +1,232 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE    : lab-template.tex
+% SUBJECT : Lab #3 report. This is intended to serve as a sample.
+% AUTHOR  : (C) Copyright 2010 by Peter C. Chapin <PChapin@vtc.vsc.edu>
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ++++++++++++++++++++++++++++++++
+% Preamble and global declarations
+% ++++++++++++++++++++++++++++++++
+\documentclass{article}
+
+% --------
+% Packages
+% --------
+\usepackage[pdftex]{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{url}
+
+% The following are settings for the listings package
+\lstset{language=C,
+        basicstyle=\small,
+        stringstyle=\ttfamily,
+        commentstyle=\ttfamily,
+        xleftmargin=0.25in,
+        showstringspaces=false}
+
+
+% ------------------
+% Layout adjustments
+% ------------------
+% Avoid changing the layout; it is usually set via the document class (or in packages).
+%\pagestyle{headings}
+%\setlength{\parindent}{0em}
+%\setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+
+% ------
+% Macros
+% ------
+\newcommand{\filename}[1]{\texttt{#1}}
+\newcommand{\command}[1]{\texttt{#1}}
+
+
+% +++++++++++++++++++
+% The document itself
+% +++++++++++++++++++
+\begin{document}
+
+% ----------------------
+% Title page information
+% ----------------------
+\title{CIS--3152 Lab \#3\\Transmission Control Protocol}
+\author{Peter C. Chapin\thanks{PChapin@vtc.vsc.edu}\\
+  Vermont Technical College}
+\date{February 3, 2010}
+\maketitle
+
+% --------
+% Abstract
+% --------
+\begin{abstract}
+  Using Wireshark I observed the TCP traffic between my quote of the day server and my quote of
+  the day client. I recorded and interpreted the TCP segment headers and investigated some of
+  the states in the TCP state diagram. With the exception of some details in the behavior of the
+  client's window size, all observations agreed with my expectations.
+\end{abstract}
+
+% ------------
+% Main Content
+% ------------
+
+\section{Introduction}
+\label{sec:introduction}
+
+In this lab I used the Windows quote of the day client and the Linux quote of the day server
+that I wrote for Lab \#2. I observed the TCP traffic between the two programs using Wireshark on
+a Windows workstation. Because I was using a network analyzer on the Windows station, it was
+essential to run one of the two programs (the client in my case) on the same station. Otherwise
+the network analyzer would not have been able to see the communication.
+
+See the lab handout for information about the specific steps taken in this lab.
+
+\section{Results}
+\label{sec:results}
+
+I observed the TCP traffic between the client and server programs using the network analyzer.
+What follows is a detailed listing of that traffic. The client was running on a WinXP laptop.
+The server was running on a Linux system.
+
+\begin{verbatim}
+Segment #1: Client to server...
+        Source port = 1230
+        Destination port = 9000
+        Sequence number = 514042259
+        Ack number = 0
+        Flags: SYN
+        Window = 16384
+        Options: MSS = 1460 (typical for ethernet)
+        Data: 0 bytes
+\end{verbatim}
+
+This first segment going from client to server indicates that the client is doing the active
+open. This segment was sent in response to the client's call to connect().
+
+\begin{verbatim}
+Segment #2: Server to client...
+        Source port = 9000
+        Destination port = 1230
+        Sequence number = 2851385579
+        Ack number = 514042260
+        Flags: ACK, SYN
+        Window = 5840
+        Options: MSS = 1460
+        Data: 0 bytes
+\end{verbatim}
+
+Notice that the server acknowledges the client's sequence number plus one. The SYN segment
+consumes one byte's worth of sequence number space. It is also interesting to notice that the
+sequence numbers and window sizes in the two different directions are unrelated. For brevity I
+leave out the port addresses in all the following segments.
+
+\begin{verbatim}
+Segment #3 Client to server... completion of connection handshake.
+        Sequence number = 514042260
+        Ack number = 2851385580
+        Flags: ACK
+        Window = 17520
+        Data: 0 bytes
+\end{verbatim}
+
+After sending this segment the client's call to connect() should have returned. After receiving
+this segment the server's call to accept() should have returned. Notice that this segment also
+ACKs just past the server's initial sequence number. Notice also that the client has adjusted
+its window size upwards. I do not know the reason for this.
+
+\begin{verbatim}
+Segment #4 Server to client... the quote!
+        Sequence number = 2851385580
+        Ack number = 514042260
+        Flags: ACK, PSH
+        Window = 5840
+        Data: 57 bytes
+\end{verbatim}
+
+This segment contains the complete quote. It was sent in response to the server's write() call.
+The PSH flag indicates to the client TCP that it should deliver this data to the client
+application (if it has been buffering data). That makes sense since there will not be any more
+data forthcoming.
+
+\begin{verbatim}
+Segment #5 Server to client... closing the connection.
+        Sequence number = 2851385637
+        Ack number = 514042260
+        Flags: ACK, FIN
+        Window = 5840
+        Data: 0 bytes
+\end{verbatim}
+
+The server does not wait for the previous segment to be acknowledged. The server application has
+called close() and the server sends a FIN segment at once. Since the server is the first to send
+a FIN segment, the server is the one doing the active close. Notice that the sequence number of
+this segment is 57 bytes past that of the last one---a reflection of the 57 bytes contained in
+the earlier segment.
+
+\begin{verbatim}
+Segment #6 Client to server... ACK
+        Sequence number = 514042260
+        Ack number = 2851385638
+        Flags: ACK
+        Window = 17463
+        Data: 0 bytes
+\end{verbatim}
+
+With this segment the client acknowledges both the server's data segment and the server's FIN
+segment. Notice that the FIN also takes up one byte's worth of sequence number space. The client
+is showing a window that is 57 bytes less than it was. This suggests that the 57 data bytes are
+still in the client's TCP buffer and have not yet been read by the client application.
+
+\begin{verbatim}
+Segment #7 Client to server... closing the connection
+        Sequence number = 514042260
+        Ack number = 2851385638
+        Flags: ACK, FIN
+        Window = 17463
+        Data: 0 bytes
+\end{verbatim}
+
+The client application has processed the data and has called closesocket(). The client's TCP
+sends its own FIN segment. Notice that the window size is still the reduced to 17463 bytes. I
+would have expected the client's TCP to have restored the window to its prior, larger size after
+the client application finished processing the data.
+
+\begin{verbatim}
+Segment #8 Server to client... finalizing the close
+        Sequence number = 2851385638
+        Ack number = 514042261
+        Flags: ACK
+        Window = 5840
+        Data: 0 bytes
+\end{verbatim}
+
+With this segment the connection fully ends.
+
+I also used netstat on the server machine to observe some of TCP states. For example, after the
+server blocked in accept() but before a client connected the server was shown in the LISTEN
+state. I had to use the -a option with netstat to see this. I included some code in the server
+that caused it to pause after a connection was made but before it sent any data. This allowed me
+to see the server in the ESTABLISHED state (the client was also in the ESTABLISHED state at this
+time). I included some code in the client that caused it to pause after it had received all of
+the data but before it closed the connection. This allowed me to see the server in the
+FIN\_WAIT\_2 state. In that state the server had already closed but was waiting for the client's
+corresponding FIN segment. At the same time the client was in the CLOSE\_WAIT state.
+
+Most of the states in the TCP state diagram could not be easily observed. This was because they
+are entered and left entirely while my programs were in system calls. Since I was only able to
+pause my programs when control was in my code, that prevented me from viewing certain TCP
+states.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+The TCP traffic between the client and server behaved as I expected. All sequence numbers,
+segment sizes, and flags were consistent with documented TCP standards. The only unexplained
+detail I observed was with the client's window size.
+
+The TCP states I observed on the client and server were also in agreement with my expectation.
+Although most states were unobservable in this experiment, those that were occured at the
+appropriate times.
+
+\end{document}

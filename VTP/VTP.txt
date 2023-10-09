@@ -1,0 +1,123 @@
+
+The VTC Transport Protocol (VTP)
+Revised: April 2021 by Peter Chapin
+===================================
+
+This document describes VTP. This document is rough. So is the protocol.
+
+Assume: 1. Network does not loose packets.
+        2. Packets will be delivered in the right order
+        3. Packets will not be duplicated.
+
+I don't believe VTP requires assumption #2, but I list it for now anyway. These assumptions are
+totally unrealistic on the Internet, but they are not too far off in a LAN. Thus VTP will only
+be useful in a LAN environment.
+
+Assume: 1. Flow control is necessary. The receiving machine might be slow.
+        2. Process on either end of the connection might vanish.
+
+Although the network is assumed to deliver all packets, VTP will not assume too much about the
+systems on either end. In particular some sort of flow control will be necessary to prevent a
+fast sender from overwhelming a slow receiver. Also there will have to be some sort of timeout
+mechanism so that if the receiver is just shut off (for example) the sender eventually notices.
+
+The idea is that if we don't hear from the other end of a connection, we can assume the other
+end is dead (permanently inaccessible). There is no possibility that our latest packet just
+didn't make it and that if we try again everything might be fine.
+
+Stop and Wait
+-------------
+
+VTP is a stop and wait protocol. The sender transmits a packet and waits for the receiver to
+acknowledge it before transmitting another one. The acknowledgment doesn't need to contain
+much information: there is only one data packet on the wire at a time (hence the issue of
+delivery order is irrelevant) so there is no ambiguity about which packet is being
+acknowledged. There are also no retries. If the receiver doesn't acknowledge a packet the
+sender will assume that the receiver is dead.
+
+When the receiver does acknowledge a packet, the sender assumes the receiver is able to accept
+the next packet immediately. Thus the receiver shouldn't acknowledge a packet unless there is
+buffer space available to hold it. This means that if the receiver process is slow at dealing
+with the data, the sender might time out and regard the receiver as dead. The sender timeout
+interval should be fairly generous to help protect against this possibility. Also the
+application level protocol should avoid setting up situations where the sender transmits a lot
+of data before the receiver is prepared to process it. For example, the application protocol
+should "immediately" try to read a response as soon as it has sent a request.
+
+Packet size is limited to 1024 bytes of data plus a header.
+
+Stop and Wait is inefficient when the transit time is large. On a LAN that is not true and stop
+and wait should be acceptable for many applications.
+
+VTP is full duplex.
+
+VTP Header
+------------
+
+struct VTP_header {
+  uint16_t data_length; // Is zero for control packets.
+  uint16_t flags;       // 0 = data, 1 = ACK, 2 = CONN_REQ, 4 = CLOSE_REQ
+};
+
+That's about it!
+
+To establish a connection, send an empty packet with the CONN_REQ bit set to 1. When the
+receiver sends ACK, the connection is established. The receiver assumes the sender is also
+prepared to receive data (full duplex connections). Since there are no sequence numbers that
+have to be exchanged there is no three way handshake as there is for TCP. Also the "maximum
+segment size" is set by the protocol and can't be negotiated.
+
+To close a connection, either side sends an empty packet with the CLOSE_REQ bit set to 1. When
+the receiver ACKs this packet, the connection is half closed. The receiver must also send a
+CLOSE_REQ when it is ready to close the other direction. Thus VTP supports the notion of half
+open connections just the way TCP does.
+
+VTP API
+---------
+
+It would be ideal to add VTP as another protocol option to the standard sockets API. However, we
+won't do that. Instead we'll build a (shared) library that implements VTP. Here is the
+interface:
+
+int VTP_socket( void );
+  // Returns a socket handle or -1 on error.
+
+int VTP_connect( int handle, struct sockaddr_in *remote_addr );
+  // Connects given socket with specified remote address. -1 on error.
+
+int VTP_read( int handle, void *buffer, int size );
+  // Reads from given socket.
+
+int VTP_write( int handle, void *buffer, int size );
+  // Writes to given socket.
+
+int VTP_close( int handle );
+  // Closes given socket. -1 on error.
+
+int VTP_bind( int handle, struct sockaddr_in *local_addr );
+  // Associates given socket with specified local address. -1 on error.
+
+int VTP_listen( int handle );
+  // Allows given socket to establish connections. -1 on error.
+
+int VTP_accept( int handle, struct sockaddr_in *remote_addr );
+  // Waits for new connection and returns socket handle of a new socket
+  // for that connection. Also provides remote address. -1 on error.
+
+These functions do more or less what you would expect. Use them the way you would use the
+standard socket API functions. Note that VTP is a stream protocol. It imposes no record
+boundaries in the data stream sent over the connection.
+
+Implementation Notes
+--------------------
+
+The implementation should create an array of socket objects (each socket object is implemented
+as some sort of structure). The socket handles are indices into that array. When data comes in
+for a connection, it has to be loaded into a buffer of some sort asynchronously. In most cases
+the ACK can be sent right away, but if the buffer is full, it ACK will have to wait until
+VTP_read() has made some space. This is because ACK implies readiness for the next packet. If
+the process is very slow reading, the sender might conclude that the process is dead (timeout)
+and terminate the connection. This is a weakness of the protocol.
+
+The VTP_write() function does not return until the data has all been sent (and ACKed) or until
+a timeout occurs. (In which case, the write function returns -1).

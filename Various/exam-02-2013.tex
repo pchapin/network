@@ -1,0 +1,156 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE         : exam-02b.tex
+% AUTHOR       : Peter C. Chapin
+% LAST REVISED : 2013-04-25
+% SUBJECT      : Exam #2 for CIS-3152
+%
+% Send comments or bug reports to:
+%
+%       Peter C. Chapin
+%       Computer Information Systems Department
+%       Vermont Technical College
+%       Williston, VT 05495
+%       PChapin@vtc.vsc.edu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{examdesign}
+
+% Options.
+\Fullpages
+\NoRearrange
+% \NoKey
+\NumberOfVersions{1}
+
+% Class and exam information.
+\class{CIS-3152}
+\examname{Exam \#2}
+
+% This setting seems to be ignored (in the answer key at least).
+% \setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+\begin{document}
+
+% I can't seem to be able to use namedata@vspace below (see documen-
+% tation). I can use the default \namedata but I can't seem to redefine
+% \namedata to suite my needs.
+%
+\begin{examtop}
+  \parbox{3in}{\classdata \\
+               \examtype, Form: \fbox{\textsf{\Alph{version}}}}
+  \hfill
+  \parbox{3in}{\normalsize Name: \hrulefill \\[2.0ex]
+                           Date: \hrulefill }
+  \bigskip
+\end{examtop}
+
+\textit{This is a take-home exam. Do not work with anyone else on the exam or post questions
+  about the exam to any Internet forums, etc. You can use any other resources including the
+  text, your notes, or documents you find online (including old forum discussions started by
+  others). Please include a URL for any Internet resources you use. If you have any questions
+  about the exam, feel free to contact me.}
+
+\begin{shortanswer}
+
+  % SMTP
+  \begin{question}
+    In the SMTP protocol the client and server exchange lines of US-ASCII text. One could
+    imagine a binary mail transport protocol as an alternative: single byte control codes could
+    be used to mark significant information (from address, to address, etc) and the mail
+    messages themselves could be allowed to contain arbitrary binary data. What are the
+    advantages and disadvantages of such an approach?
+
+    \begin{answer}
+      The main advantage of using a binary mail protocol is that the data transmitted on the
+      wire would be more compact and thus could be transmitted more efficiently. With less
+      overhead there would be higher effective bandwidth.
+      
+      The main disadvantage, aside from incompatibility with current mail servers, is that it
+      would no longer be possible to just telnet to a server and interact with it directly. In
+      other words, testing and debugging mail servers would be more difficult.
+    \end{answer}
+  \end{question}
+
+%\pagebreak
+
+  % RFC-5322
+  \begin{question}
+    In this class we presented the structure of email messages (as described in RFC-5322) as a
+    kind of protocol layer above SMTP and below MIME. Explain what that means.
+
+    \begin{answer}
+      The lower level protocol, SMTP, does not need to know about the details of how mail
+      messages are formatted. Similarly mail messages do not need to take into account the MIME
+      structuring that occurs at the upper level. In other words SMTP, RFC-2822, and MIME are
+      independent of each other. Each protocol ``nests'' inside the lower one. This is exactly
+      how, for example, IP and TCP are related so in that sense the three protocols are layered
+      in a similar way.
+    \end{answer}
+  \end{question}
+
+%\pagebreak
+
+  % MIME
+  \begin{question}
+    Consider the attached multipart/mixed email message. Answer the following questions.
+    \begin{enumerate}
+      \item How many parts does the message have and what is the MIME type of each part?
+      \item The encoding of the second attachment ends with an `=' character. What is the
+      significance of that? Why doesn't the encoding of the first attachment end with an `='
+      character?
+      \item Suppose you modified the second occurence of the boundary line (the one just before
+      the first attachment) so that it no longer matched the other boundary lines? What would
+      happen to the message structure and how would you expect the message to be displayed?
+    \end{enumerate}
+    
+    \begin{answer}
+      \begin{enumerate}
+      
+        \item There are three parts. The first is text/plain, the second is text/plain, and the
+        third is image/jpeg.
+        \item The trailing `=' is a padding character used as part of the base64 encoding. Such
+        characters are needed when the input file is not a multiple of three in length. The
+        first attachment didn't need any such padding because, apparently, it is a multiple of
+        three in length.
+        \item Instead of having two attachments there would be only one (image/jpeg) attachment.
+        The encoded text of the original first attachment (including the modified boundary line)
+        would then be interpreted as text in the first part of the message.
+      \end{enumerate}
+    \end{answer}
+  \end{question}
+
+%\pagebreak
+
+  % XML Schema
+  \begin{question}
+    Consider the attached sample XML document. This document is an instance of a hypothetical
+    exam markup language that can be used to structure tests in courses such as this one. Using
+    the W3C's XML Schema language write the definition for the \texttt{question} element. You
+    can assume that the \texttt{xs} name space prefix has already been declared (as was done in
+    lab). Notice that a question can have multiple answers. You do not need to write an entire
+    schema.
+  \end{question}
+
+%\pagebreak
+
+%  % XPath/XSL
+%  \begin{question}
+%	  Again consider the attached sample XML document. Answer the following questions.
+%	  \begin{enumerate}
+%	    \item Show an absolute XPath expression that selects all questions with a difficulty
+%	    of 3.
+%	    \item Assuming that the context node is a particular question, show a relative XPath
+%	    expression that selects the second answer (if any) of that question.
+%	    \item Write an XSLT template that converts a question element into XHTML. Wrap the
+%	    body of the question and the answer inside XHTML paragraphs ($<$p$>$). You do not
+%	    need to process the attributes of the question element.
+%	  \end{enumerate}
+%  \end{question}
+
+  % RPC
+  \begin{question}
+    All remote procedure call systems attempt to ``hide the network.'' Explain what this means.
+    Give at least one way in which this hiding is imperfect.
+  \end{question}
+
+\end{shortanswer}
+\end{document}

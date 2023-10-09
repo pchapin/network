@@ -1,0 +1,17 @@
+
+    Recorded data:
+
+1   IP addresses and ports.
+1   Sequence numbers.
+1   Flags.
+1   Window size.
+1/2 Options.
+
+2   All relevant segments.
+2   Interpretation.
+
+1   Observation of FIN_WAIT_2.
+1   Observation of CLOSE_WAIT.
+1   Observation of ESTABLISHED.
+
+8.5 points free.

@@ -1,0 +1,186 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE         : exam-01b.tex
+% AUTHOR       : Peter C. Chapin
+% LAST REVISED : 2012-04-11
+% SUBJECT      : Exam #1 for CIS-3152
+%
+% Send comments or bug reports to:
+%
+%       Peter C. Chapin
+%       Computer Information Systems Department
+%       Vermont Technical College
+%       Randolph Center, VT 05061
+%       PChapin@vtc.vsc.edu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{examdesign}
+
+% Options.
+\Fullpages
+\NoRearrange
+% \NoKey
+\NumberOfVersions{1}
+
+% Class and exam information.
+\class{CIS-3152}
+\examname{Exam \#1}
+
+% This setting seems to be ignored (in the answer key at least).
+% \setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+\begin{document}
+
+% I can't seem to be able to use namedata@vspace below (see documen- tation). I can use the
+% default \namedata but I can't seem to redefine \namedata to suite my needs.
+%
+\begin{examtop}
+  \parbox{3in}{\classdata \\
+               \examtype, Form: \fbox{\textsf{\Alph{version}}}}
+  \hfill
+  \parbox{3in}{\normalsize Name: \hrulefill \\[2.0ex]
+                           Date: \hrulefill }
+  \bigskip
+\end{examtop}
+
+\begin{shortanswer}
+
+  % Sockets programming.
+  \begin{question}
+    The call to \texttt{connect()} in a typical sockets based TCP program uses a second argument
+    that looks like \texttt{(struct sockaddr *) \&server\_address} where
+    \texttt{server\_address} is a \texttt{struct sockaddr\_in}. Why is the complicated type
+    conversion necessary? In other words: why wasn't \texttt{connect()} declared to take a
+    \texttt{struct sockaddr\_in *} in the first place?
+
+    \begin{answer}
+      The sockets API was designed to work with many different protocol families. Each protocol
+      family has its own way of addressing nodes and thus has its own socket address structure.
+      The \texttt{connect()} function must be able to take a pointer to any of these address
+      structure types. To deal with that in C, \texttt{connect()} has been declared as taking a
+      pointer to a generic address structure with the understanding that the caller can send in
+      a pointer to any of the supported structures (by using an appropriate type cast).
+    \end{answer}
+  \end{question}
+
+%\pagebreak
+
+  % TCP state diagram.
+  \begin{question}
+  	Answer two of the three questions below.
+    \begin{enumerate}
+    \item When a client program calls \texttt{connect()}, what state or states in the TCP state
+      diagram does the connection touch?\footnote{By ``touch'' I mean ``pass through'' or ``end
+        up in.''} You can assume normal, error free behavior.
+    \item What is the difference between ``active close'' and ``passive close?''
+    \item What sequence of states does the TCP connection touch when the side doing the passive
+      close calls \texttt{close()}? You can assume normal, error free behavior.
+    \end{enumerate}
+    
+    \begin{answer}
+    \begin{enumerate}
+    
+    \item When calling \texttt{connect()} the client passes through the SYN\_SENT state and ends
+      up in the ESTABLISHED state.
+    \item The side that does the active close is the side that initially calls \texttt{close()}
+      to end a connection. This side sends the first FIN segment. The side that does the passive
+      close acknowledges the initial FIN segment. It then later calls \texttt{close()} as well
+      to send a FIN segment of its own.
+    \item When the passive side calls \texttt{close()} it starts in CLOSE\_WAIT and passes
+    through LAST\_ACK.
+    \end{enumerate}
+    \end{answer}
+  \end{question}
+
+%\pagebreak
+
+  % TCP internals.
+  \begin{question}
+    Answer two of the three questions below.
+    \begin{enumerate}
+    \item TCP is said to be a ``windowed protocol.'' What does that mean and why is that
+      important?
+    \item What is the difference between the receiver window and the congestion window?
+    \item To decide if it should retransmit a segment, TCP uses ``intelligent timeouts.'' What
+      is intelligent about them?
+    \end{enumerate}
+
+    \begin{answer}
+    \begin{enumerate}
+    \item Instead of waiting for each segment to be acknowledged separately, TCP transmits as
+      many segments as it can to fill a ``window'' of data. When it receives an acknowledgment
+      for the first segment sent, the window moves down the data stream exposing some fresh data
+      at the other end. This is important because it allows a lot of data to be in transit on
+      the network and thus allows two nodes to communicate efficiently despite high network
+      latencies.
+    \item The receiver window reflects the amount of available space in the receiver's buffer.
+      The congestion window is the sender's estimate of the network's capacity.
+    \item Intelligent timeouts adapt to the specifics of a particular connection and can even
+      change over the lifetime of the connection. TCP estimates the mean and standard deviation
+      of the round trip time and uses that estimate as the basis for setting the current time
+      out interval.
+    \end{enumerate}
+    \end{answer}
+  \end{question}
+
+%\pagebreak
+
+  % UDP
+  \begin{question}
+    UDP is an unreliable protocol. However, some services are most appropriately implemented as
+    UDP services rather than using the more reliable TCP (DNS and TFTP are like this). Give at
+    least one \emph{advantage} that UDP has over TCP in these cases. Under what conditions is
+    the unreliability of UDP not an issue?
+
+    \begin{answer}
+      UDP's advantage over TCP is its lower overhead. This is particularly significant if the
+      messages being exchanged are small. UDP works well when a client's request and the
+      server's reply both fit into a single datagram, and when the service being provided has
+      the property of being idempotent. UDP is also a good choice in cases where its
+      unreliability is not an issue such as streaming media (where lost data degrades the
+      quality of the service but does not cause an outright failure of the service).
+    \end{answer}
+  \end{question}
+
+%\pagebreak
+
+  \begin{question}
+    A program that uses UDP will use the \texttt{sendto()} and \texttt{recvfrom()} functions
+    instead of the \texttt{send()}/\texttt{recv()} or \texttt{write()}/\texttt{read()} functions
+    that a TCP based program would use. The \texttt{sendto()} and \texttt{recvfrom()} functions
+    both take a pointer to a sockaddr structure as a parameter. What is the purpose of this
+    parameter and why do the UDP functions require it while the TCP functions do not?
+
+    \begin{answer}
+      The address of the remote host is provided to (or from) TCP when the connection is
+      established (during \texttt{connect()} for the client or \texttt{accept()} for the
+      server). Since that address remains the same for the duration of the connection there is
+      no need to provide it again during the read/write operations.
+
+      In contrast UDP does not have connections. Thus the address of the remote host must be
+      provided to (or obtained from ) each read/write operation separately. This is the purpose
+      of the sockaddr structure mentioned above.
+    \end{answer}
+  \end{question}
+
+%\pagebreak
+
+  % IPv6
+  \begin{question}
+    BONUS (5pts) There are three general reasons why IPv6 was developed. What are they? For full
+    credit you should give a sentence or two of explanation for each reason; avoid single word
+    answers.\footnote{However, your explanations can be short; you don't need to fill the page!}
+
+    \begin{answer}
+    \begin{enumerate}
+    \item The world is running out of IPv4 addresses (for example, due to inefficient allocation
+      together with the large number of new network users).
+    \item The backbone routers were getting overloaded because of the large routing tables they
+      had to search for each packet. IPv6 has features to simplify routing.
+    \item IPv4 is quite old and lacks features now considered important: such as support for
+      security, mobile devices, and quality of service controls to name a few.
+    \end{enumerate}
+    \end{answer}
+  \end{question}
+
+\end{shortanswer}
+\end{document}

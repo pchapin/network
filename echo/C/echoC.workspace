@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="Workspace">
+		<Project filename="client/client.cbp" active="1" />
+		<Project filename="client-deadlock/client-deadlock.cbp" />
+		<Project filename="concurrent-server/concurrent-server.cbp" />
+		<Project filename="threaded-server/threaded-server.cbp" />
+	</Workspace>
+</CodeBlocks_workspace_file>

@@ -1,0 +1,71 @@
+
+=> when doing binary operations in C, I suggest using unsigned data types
+   (unsigned char, 8 bits), (unsigned short, 16 bits), (unsigned int, 32 bits)
+
+ &  bitwise AND
+ |  bitwise OR
+ ^  bitwise XOR
+ ~  bitwise complement ("not")
+
+ 1111,0000 == 0xF0
+
+ ~1111,0000 == 0000,1111
+
+ 1111,0000 & 0011,1100 == 0011,0000 ("and" erases bits)
+ 1111,0000 | 0011,1100 == 1111,1100 ("or" sets [to one] bits)
+ 1111,0000 ^ 0011,1100 == 1100,0000 ("xor" inverts bits)
+
+ ~x == x ^ 0xFF
+
+ 1000,1111 << 2 == 0011,1100  (left shift multiplies)
+ 1000,1111 >> 2 == 0010,0011  (right shift divides)
+
+ let a == xyxy,xyxy I want to convert this into: yxyx,yxyx
+          0101,0101
+          
+ unsigned char a = ...;
+ unsigned char b;
+
+ // Swap adjacent bits in 'a'
+ b = a;
+ a &= 0xAA;  // Erase the y bits in 'a'
+ b &= 0x55;  // Erase the x bits in 'b'
+ a >>= 1;
+ b <<= 1;
+ a |= b;
+
+    a == 1011,0110 (0xB6)
+    AND  1010,1010
+         ---------
+         1010,0010
+         >>      1
+         ---------
+         0101,0001
+
+    b == 1011,0110
+    AND  0101,0101
+         ---------
+         0001,0100
+         <<      1
+         ---------
+         0010,1000
+
+         0101,0001
+     OR  0010,1000
+         ---------
+         0111,1001 (0x79)
+
+
+  unsigned char a = ...;
+  unsigned char b = ...;
+
+  // copy bits 2..4 from b into a.
+
+  7654,3210
+  xxxx,xxxx
+  0001,1111  0x1F
+  1110,0011  0xE3
+  0001,1100  0x1C
+
+  a &= 0x1F;
+  a |= (b & 0x1C) << 3;

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>CIS-3152 Homework #3</title>
+    <meta name="Author" content="Peter C. Chapin" />
+    <meta name="ROBOTS" content="NOINDEX,NOFOLLOW,NOARCHIVE" />
+    <link rel="stylesheet" href="../default.css" type="text/css" />
+  </head>
+
+  <body>
+    <h1>CIS-3152 Homework #3 (SCTP)</h1>
+
+    <p><i>Due: Monday, March 10, 2014</i></p>
+    
+    <p>In this assignment you'll look at the SCTP protocol.</p>
+
+    <p>Stevens talks about SCTP throughout the text. A quick overview is given in section 2.5.
+    Chapter 9 covers many of the details. Information on how to use the <tt>sendmsg</tt> and
+    <tt>recvmsg</tt> functions are in section 14.5. You can also refer to the man pages or other
+    Internet resources.</p>
+
+    <p>SCTP is a relatively new, alternative transport protocol with many advanced features. In
+    principle it could replace TCP although it is not widely used (why not?). For this
+    assignment write a demonstration daytime client and server that uses SCTP instead of TCP for
+    communication. Start by copying the "stock" daytime client and server and modifying
+    them.</p>
+
+    <p>It is possible to make this work by making only a fairly small change to the
+    initialization sequence of both programs. That will be sufficient for two thirds of the
+    credit. However, for full credit you should replace the client's call to <tt>read</tt> with
+    a call to the (more complicated but more flexible) <tt>recvmsg</tt> function. Similarly
+    replace the server's call to <tt>write</tt> with <tt>sendmsg</tt>. Figuring out how to use
+    these functions is the challenging part of this assignment! HINT: You do not need to send
+    any control information nor specify any space for peer address information.</p>
+
+    <p>Observe the communication between the programs using Wireshark and notice that it is
+    <em>not</em> using TCP.</p>
+
+    <p>This simple demonstration program does not delve into SCTP's enhancements at all.
+    However, it is interesting to see how the sockets API can be used to access a variety of
+    different protocols. You have seen three transport layer protocols: TCP, UDP, and now SCTP,
+    as well as two network layer protocols: IPv4 and IPv6. What would be involved in using SCTP
+    over IPv6?</p>
+
+  </body>
+</html>

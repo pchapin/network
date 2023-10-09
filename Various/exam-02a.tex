@@ -1,0 +1,288 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE         : exam-02.tex
+% AUTHOR       : (C) Copyright 2010 by Peter C. Chapin <PChapin@vtc.vsc.edu>
+% LAST REVISED : 2010-05-03
+% SUBJECT      : Exam #2 for CIS-3152
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{examdesign}
+
+% Options.
+\Fullpages
+% \NoRearrange
+% \NoKey
+\NumberOfVersions{2}
+
+% Class and exam information.
+\class{CIS-3152: Networks II}
+\examname{Exam \#2}
+
+% This setting seems to be ignored (in the answer key at least). \setlength{\parskip}{1.75ex
+%   plus0.5ex minus0.5ex}
+
+\begin{document}
+
+% I can't seem to be able to use namedata@vspace below (see documen- tation). I can use the
+% default \namedata but I can't seem to redefine \namedata to suit my needs.
+%
+\begin{examtop}
+  \parbox{3in}{\classdata \\
+               \examtype, Form: \fbox{\textsf{\Alph{version}}}}
+  \hfill
+  \parbox{3in}{\normalsize Name: \hrulefill \\[2.0ex]
+                           Date: \hrulefill }
+  \bigskip
+\end{examtop}
+
+% This exam covers the following topics. Since I am scrambling the sections, I can build the
+% exam with questions for the same topic together. That makes it easier to verify that all
+% topics are being covered and to check the balance of questions between the various topics.
+%
+% SMTP
+% RFC-2822, MIME
+% Character sets (Unicode)
+% XML, XML schema
+% RPC
+
+\begin{truefalse}
+  
+  Answer each of the following questions ``True'' or ``False''. Each question is worth two
+  points. If you decide to change your answer to any question, draw an `X' through your old
+  answer and write your new answer next to it. Do not try to change a `T' to an `F' or
+  visa-versa!
+
+  % 1 (SMTP)
+  \begin{question}
+    \answer{True} Legacy SMTP (that is, SMTP with no extensions) is a stop-and-wait protocol.
+  \end{question}
+  
+  % 2 (SMTP)
+  \begin{question}
+    \answer{False} SMTP requires that a message be delivered to a single recipient. If multiple
+    recipients are intended, the message must be transmitted multiple times.
+  \end{question}
+
+  % 3 (RFC-2822, MIME)
+  \begin{question}
+    \answer{False} In an RFC-2822 formatted message, each header line must be indented.
+  \end{question}
+
+  % 4 (RFC-2822, MIME)
+  \begin{question}
+    \answer{True} If an old mail program (without MIME support) received a MIME formatted email
+    message it should still be able to properly display the sender's name and address as well as
+    the message's subject line and date stamp.
+  \end{question}
+
+  % 5 (Character sets, Unicode)
+  \begin{question}
+    \answer{False} In the UTF-16 encoding of Unicode, every possible character occupies exactly
+    16 bits.
+  \end{question}
+  
+  % 6 (Character sets, Unicode)
+  \begin{question}
+    \answer{True} In Unicode a ``combining character'' is a character that in some way modifies
+    the meaning or appearance of the character occuring before it in the character stream.
+  \end{question}
+
+  % 7 (XML, XML Schema)
+
+  \begin{question}
+    \answer{True} The purpose of XML is to allow the structure of complex documents to be made
+    explicit so that programs can read that structure more easily.
+  \end{question}
+
+  % 8 (XML, XML Schema)
+  \begin{question}
+    \answer{False} An XML Schema describes how the various elements in a document are to be
+    formatted for display.
+  \end{question}
+
+  % 9 (RPC)
+  \begin{question}
+    \answer{False} The primary goal of any RPC system is to improve the performance (data
+    transfer rate) of client/server communication.
+  \end{question}
+  
+  % 10 (RPC)
+  \begin{question}
+    \answer{True} Sun's RPC can be used between computers using different processor
+    architectures. For example a client on a 32 bit x86 machine can communicate with a server on
+    a 64 bit Alpha based machine.
+  \end{question}
+
+\end{truefalse}
+
+\begin{multiplechoice}
+  
+  Indicate the \emph{best} answer in each of the following questions by circling the letter of
+  your choice. Each question is worth two points. If you decide to change your answer to any
+  question, draw an 'X' through your old answer and circle your new answer.
+
+  % 1 (SMTP)
+  \begin{question}
+    SMTP is called a ``store and forward'' protocol. This is because
+
+    \choice{Extensions have been added to the SMTP protocol for specifying forwarding addresses.}
+    \choice{Every SMTP server is required to save a copy of all messages that pass through it.}
+    \choice{The SMTP protocol is a stop-and-wait protocol.}
+    \choice[!]{An SMTP server can receive a message even if it is not the ultimate destination
+      for that message.}
+  \end{question}
+
+  % 2 (SMTP)
+  \begin{question}
+    In theory SMTP is unaware of the content of the mail messages it transmits. However, this is
+    not entirely true because
+
+    \choice{SMTP servers examine the ``To'' header to determin the destination of the message.}
+    \choice{SMTP servers verify the ``Date'' header and change it if it is inconsistent (for
+      example if it contains a date in the future).}
+    \choice{As a security measure, SMTP servers verify that the ``From'' header of the message
+      agrees with the address given to them in the ``MAIL FROM'' SMTP command.}
+    \choice[!]{Each SMTP server edits the message to add information about how the message was
+      routed through that server.}
+  \end{question}
+  
+  % 3 (RFC-2822, MIME)
+  \begin{question}
+    Correctly formed RFC-2822 messages are entirely composed of US-ASCII text. This requirement
+    exists because
+
+    \choice[!]{The SMTP protocol was originally defined as only able to transmit US-ASCII data.}
+    \choice{Such messages are easier to read in various tools.}
+    \choice{The MIME standard defines a way to convert binary data into US-ASCII text.}
+    \choice{The first email applications were developed in the United States where English is
+      the primary language.}
+  \end{question}
+
+  % 4 (RFC-2822, MIME)
+  \begin{question}
+    Base 64 encoding is useful because
+
+    \choice{It is faster to process on 64 bit machines.}
+    \choice[!]{It can transform binary data into plain ASCII text.}
+    \choice{The encoded output is still nearly readible text if the input was mostly US-ASCII
+      already.}
+    \choice{The encoded output is essentially the same size as the input.}
+  \end{question}
+
+  % 5 (Character sets, Unicode)
+  \begin{question}
+    Some character encodings have a special ``shift'' character. After seeing the shift
+    character, subsequent bytes are interepreted differently until a new shift back to the
+    initial state is seen. The \emph{advantage} of this scheme over, say, UTF-16 encoded Unicode
+    is
+
+    \choice[!]{With multiple shift states a large number of characters can be encoded using the
+      same byte and, if shifts occur infrequently, this results in a compact encoding of the
+      text.}
+    \choice{It is easy to randomly access a string to, for example, display a single character
+      from the middle of the string.}
+    \choice{You can count the number of characters in a string by simply counting the number of
+      bytes in the string.}
+    \choice{It is not necessary to define combining characters to handle accents and similar
+      things.}
+  \end{question}
+  
+  % 6 (Character sets, Unicode)
+  \begin{question}
+    Unicode was developed to solve which of the following problems:
+
+    \choice{Creating documents containing a mixture of languages.}
+    \choice{Incompatible character sets causing complications when sharing data.}
+    \choice{Lack of support for obscure languages and writing systems.}
+    \choice[!]{All of the above}
+  \end{question}
+
+  % 7 (XML)
+  \begin{question}
+    An XML file is said to be ``valid'' if
+
+    \choice{It is well formed.}
+    \choice{All elements have both start and end tags that nest properly.}
+    \choice{It starts with a proper XML declaration.}
+    \choice[!]{It is both well formed and obeys the constraints specified in a particular schema.}
+  \end{question}
+
+  % 8 (XML)
+  \begin{question}
+    The W3C's XML Schema language is itself an XML vocabulary. This is good because
+
+    \choice{It is a compact way to represent schema information.}
+    \choice{XML is a standard.}
+    \choice[!]{XML schemas can be manipulated using generic XML tools.}
+    \choice{People who work with XML have less to learn and remember.}
+  \end{question}
+
+  % 9 (RPC)
+  \begin{question}
+    Many RPC systems, including Sun RPC, define an ``interface definition language'' of some
+    kind that must be used to express the interface to remotely callable services. What is the
+    main advantage of doing this?
+
+    \choice{It improves the execution performance of the system.}
+    \choice[!]{It allows the interface to be described abstractly without concern about the
+      specifics of the underlying programming environment.}
+    \choice{It allows different RPC systems to interoperate.}
+    \choice{It makes it possible for a service to be offered both remotely and locally as an
+      ordinary library.}
+  \end{question}
+  
+  % 10 (RPC)
+  \begin{question}
+    What is the purpose of the XDR standard?
+
+    \choice{It is used to check argument and return types in remote calls.}
+    \choice{It is used by Sun RPC for compatibility with an earlier (now defunct) standard.}
+    \choice[!]{It defines a cross-platform way of encoding binary data.}
+    \choice{It defines a set of minimum requirements on all implementations of Sun RPC.}
+  \end{question}
+  
+\end{multiplechoice}
+\pagebreak
+
+\begin{shortanswer}
+  \begin{question}
+    (10 pts) To use XML it is not necessary to define a schema. Users of an XML language can
+    just agree ahead of time about the elements to be used and any restrictions that apply to
+    their use. What advantage(s) is(are) there to defining and using a schema?
+
+    \begin{answer}
+      A schema formally describes the XML language in a precise, unambiguous manner.
+      Furthermore, conformance to the schema by an instance document can be machine checked. In
+      cases where those sharing XML documents have little or no prior communication, a schema
+      can increase the robustness and reliability of the information exchange.
+
+      In addition, a schema clarifies what error handling must be done by applications and what
+      facilities must be supported by, for example, style sheets.
+    \end{answer}
+  \end{question}
+\end{shortanswer}
+
+%\begin{shortanswer}
+%  \begin{question}
+%    (10 pts) What are the pros and cons of UTF-8 vs UTF-16 encoding for Unicode characters?
+%
+%    \begin{answer}
+%      If the document contains mostly English, or any other language that uses the ASCII
+%      character set, each character in the document will map to a single byte under UTF-8
+%      encoding. However a UTF-16 encoding of the same text would be twice as large and hence
+%      UTF-8 saves space in this case.
+%      
+%      However, if the document contains a large number of non-ASCII characters, many (most) of
+%      those characters would map to three bytes using UTF-8 encoding. In this case UTF-8 is
+%      actually less space efficient than UTF-16. In addition, since UTF-8 is a variable width
+%      encoding its use with non-ASCII characters creates complications for random character
+%      access, measuring the length of a string, and so forth.
+%      
+%      To summarize: UTF-8 is an excellent choice for documents that are mostly composed of ASCII
+%      characters, but a poor choice for documents that are mostly non-ASCII.
+%    \end{answer}
+%  \end{question}
+%\end{shortanswer}
+
+\end{document}
+

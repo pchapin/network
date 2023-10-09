@@ -1,0 +1,84 @@
+
+CIS-3152: Homework #1 Solution.
+(C) Copyright 2015 by Peter C. Chapin
+=====================================
+
+2.
+
+> Modify the daytime client presented in class so that it prints the number of times it invokes
+> read (make a copy of the files or make a branch in your Git repository before you modify
+> anything). Modify the server so that it sends the output string one byte at a time.
+
+In the client I declared an integer as follows.
+
+    int read_count = 0;
+
+Then I modified the main loop that reads material from the server to increment this count just
+before calling read(). Notice this counts even the read that returns an EOF indication.
+
+    read_count++;
+    while ((count = read(socket_handle, buffer, BUFFER_SIZE - 1)) > 0) {
+        buffer[count] = '\0';
+        fputs(buffer, stdout);
+        read_count++;
+    }
+
+Finally I added the following line below the main loop above but after the error check on count.
+Thus the following line only executes if reading is successful overall.
+
+    printf("read() was called %d times (including call that resulted in EOF)\n", read_count);
+
+In the server I declared an integer i and then modified the place where it writes data into the
+network to include a loop as shown below.
+
+    snprintf(buffer, BUFFER_SIZE, "%.24s\r\n", ctime(&ticks));
+    buffer_length = strlen(buffer);
+    for (i = 0; i < buffer_length; ++i) {
+        if (write(connection_handle, &buffer[i], 1) != 1) {
+            perror("Write failed");
+        }
+    }
+
+3.
+
+> Run your modified server and connect to it with your modified client. What happens? Can you
+> explain why? Try running your modified server on lemuria and your modified client on HackBox
+> (so the traffic passes over a non-trivial network). Note that you need to run your server on
+> one of your allocated ports. Is the behavior any different? Is the behavior consistent from
+> run to run? Use Wireshark to observe the traffic between client and server to see if that
+> sheds any light on what is happening. Include your answers to these questions in comments in
+> one of the files (or both if that seems more appropriate).
+
+When I ran both the server (on port 9000) and the client on HackBox using the localhost adapter
+I get the following response from the client.
+
+student@hackbox:~/Projects/cis-3152/daytime/C/client/bin/Debug$ ./client 127.0.0.1 9000
+Fri Jan 23 09:42:32 2015
+read() was called 2 times (including call that resulted in EOF)
+
+Using Wireshark I am able to see that, in fact, each character is sent over the network
+individually. Despite that, read() is only called once to get the data (the second call returned
+zero). Evidently the data was buffered in the client's receive buffer and/or read() delayed
+until it received all that data before returning.
+
+When I ran the server on lemuria (on port 9000) and the client on HackBox using the eth0 adapter
+I get the following response from the client.
+
+student@hackbox:~/Projects/cis-3152/daytime/C/client/bin/Debug$ ./client 155.42.107.97 9000
+Fri Jan 23 09:50:15 2015
+read() was called 3 times (including call that resulted in EOF)
+
+Notice that read() was called twice to get actual data. Using Wireshark I see that the first
+character ('F') is sent in a single segment by the server but the rest of the message is sent in
+a following segment.
+
+This means two things:
+
+a) There was evidently enough of a delay between sending the 'F' and sending the rest of the
+   message that read() on the client returned with the 'F' after giving up waiting for the rest.
+
+b) The fact that the rest of the message was packed into a single segment (despite write() being
+   called for each character) is likely a manifestation of Nagle's Algorithm. On the server side
+   data is gathered in the send buffer until an acknowledgement is received for the previous
+   sent data. Thus it appears that all writes() were able to complete in the time required for
+   the ACK to come back from the client.

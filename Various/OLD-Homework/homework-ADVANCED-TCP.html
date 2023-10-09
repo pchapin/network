@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+    <title>CIS-3152 Homework #3</title>
+    <meta content="Peter C. Chapin" name="author" />
+  </head>
+
+  <body>
+    <h1>CIS-3152 Homework #3 (Advanced TCP Protocol)</h1>
+
+    <p><em>Due: Friday, February 12, 2010</em></p>
+
+    <p>This homework covers the details of the TCP protocol. Details about the original TCP
+      protocol are in RFC-793. RFC-1122 describes requirements on hosts that implement the
+      TCP/IP protocol suite. TCP requirements are discussed in section 4. RFC-2581 contains a
+      modern discussion of TCP's "slow start" algorithm.</p>
+
+    <ol>
+      <li><p>What is the "Silly Window Syndrome" and why is it bad? See RFC-813.</p></li>
+
+      <li><p>What is "Nagle's Algorithm" and what problem is it trying to solve? See RFC-896.
+        Look for the section titled "The small-packet problem." Note that in RFC-896, Nagle
+        often uses the word "packet" when "segment" would have been more appropriate. Note also
+        that RFC-896 was written in 1984 when the Internet was starting to evolve into a more
+        general purpose network. Some of Nagle's discussion about why the original network
+        didn't have as many problems is interesting but of historical significance
+        only.</p></li>
+
+      <li><p>What is the difference between the "slow start" and "congestion avoidance"
+        algorithms? You can just give a qualitative description. See RFC-2581, section
+        3.</p></li>
+
+      <li><p>Suppose a sequence of segments are sent with the following round trip times: 10ms,
+        12ms, 9ms, 21ms, 10ms. Using the two methods described in class, what would TCP's
+        estimate of the round trip time be after the last segment? What time-out interval would
+        it use at that point? Use the first measured round trip time for the initial value of
+        the round trip estimate. Use zero for the initial estimate of the deviation.</p></li>
+    </ol>
+  </body>
+</html>

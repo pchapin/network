@@ -1,0 +1,121 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE    : lab07.tex
+% AUTHOR  : (C) Copyright 2012 by Peter C. Chapin
+% SUBJECT : MIME Lab for CIS-3152
+%
+% In this lab the students will build simple MIME messages and try sending them to various mail
+% programs.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ++++++++++++++++++++++++++++++++
+% Preamble and global declarations
+% ++++++++++++++++++++++++++++++++
+\documentclass[twocolumn]{article}
+
+%\pagestyle{headings}
+%\setlength{\parindent}{0em}
+%\setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+% +++++++++++++++++++
+% The document itself
+% +++++++++++++++++++
+\begin{document}
+
+% ----------------------
+% Title page information
+% ----------------------
+\title{CIS--3152 Lab \#7\\MIME}
+\author{Peter C. Chapin\thanks{PChapin@vtc.vsc.edu}\\
+  Vermont Technical College}
+\date{Last Revised: March 18, 2012}
+\maketitle
+
+\section*{Introduction}
+
+In this lab you will manually create several MIME messages and mail them to some mail user
+agents to see how they are handled. By creating the messages manually you will bypass any
+problems you might have due to limited sending mail user agents. We will be experimenting with a
+few features that are not widely implemented.
+
+The MIME standard is defined by RFC-2045 and RFC-2046. Note especially RFC-2046 where the
+various media types are defined.
+
+\section{Procedure}
+
+Due to restrictions placed on the lab machines (or by your personal malware protection software)
+you may have difficulty sending email to remote machines from your hackbox session. To get
+around this you can send mail to the student user on hackbox instead. Unfortunately this will
+limit your options regarding mail user agents. You can use either Evolution or Alpine on the
+hackbox system.
+
+To bypass the sending mail user agent you can execute the \texttt{sendmail} program
+directly\footnote{On hackbox \texttt{sendmail} is just a compatibility wrapper around the
+  Postfix mail transport agent; it is not the actual \texttt{sendmail} MTA}. Note that
+\texttt{sendmail} is not in the default path so you will need to specify a path for it
+explicitly when you run it. The syntax to use is
+
+\begin{verbatim}
+$ /usr/sbin/sendmail \
+   student@hackbox.vtc.edu < message.txt
+\end{verbatim}
+
+Here `student@hackbox.vtc.edu' is the address to which you are sending the mail. The file
+\texttt{message.txt} should contain an RFC-5322 formatted message (perhaps with MIME features).
+Notice that \texttt{sendmail} expects to find the message at its standard input and not named as
+a command line argument.
+
+The \texttt{sendmail} program will automatically add a Date header. Although the header is
+required by RFC-5322, you do not need to create it. The Date header has a fussy syntax that must
+be followed closely; it's nice that you don't have to worry about it.
+
+Ideally you would use at least two different email programs to receive your test messages. Be
+sure to record which mail clients you use and their versions (if possible) in your report.
+
+For some of the exercises you will need to produce base64 encoded data. You can use the
+\texttt{base64} program for this purpose. Read the manual page for it on hackbox.
+
+Follow these steps.
+
+\begin{enumerate}
+
+\item Start by creating a simple ``Hello, World'' email message and verifying that you can send
+  it to yourself.
+
+\item Try a text/plain message that has been base64 encoded. In other words, encode the main
+  part of the message. Note that spammers used to try doing this to avoid spam filters since in
+  the past spam filters didn't try decoding such messages to examine them. Modern spam filters
+  are not that dumb.
+
+\item Try a multipart/mixed message where the second part is the base64 encoding of some binary
+  file (for example, a small image). The encoded file should appear as an attachment in your
+  receiving mail program(s). Be sure to use an appropriate MIME type for the attachment or else
+  the receiving mail program won't know what to do with it.
+
+\item Try a multipart/mixed message where the second part is also a multipart message consisting
+  of a text/plain part and a base64 encoded binary file. OPTIONAL: It would be interesting to
+  build a sequence of messages with ever increasing depth of nesting to see how many nesting
+  levels of multipart messages your mail user agents can handle.
+
+\item Try a multipart/alternative message consisting of two text/plain parts that are very
+  different from each other. Although this is not the intent of multipart/alternative, it will
+  allow you to clearly see which alternative your mail user agents are selecting.
+
+\item Try one of the following two options.
+  \begin{enumerate}
+  \item Try a multipart/digest message. Such messages are similar to multipart/mixed except each
+    part has type message/rfc822 (See RFC-2046). Do your mail user agents handle message digests
+    any differently from ordinary multipart/mixed messages?
+
+  \item Try a message/partial message. In this case a single message is broken into fragments
+    and sent in several (smaller) parts. Mail user agents are supposed to reassemble the parts
+    automatically. Does this happen? See RFC-2046 for the details on constructing
+    message/partial messages.
+  \end{enumerate}
+\end{enumerate}
+
+\section{Report}
+
+Submit a report showing the messages you constructed for each part above and a few paragraphs
+summarizing how they worked. What conclusion can you draw?
+
+\end{document}

@@ -1,0 +1,257 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE    : lab01.tex
+% AUTHOR  : (C) Copyright 2010 by Peter C. Chapin <Peter.Chapin@vtc.vsc.edu>
+% SUBJECT : First lab for CIS-3152. Introduction to the tools.
+%
+% In this lab the students will experiment a little with some of the tools they will need to use
+% in this course. This is a lab that can be done with zero lecture support and yet is reasonably
+% worthwhile.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ++++++++++++++++++++++++++++++++
+% Preamble and global declarations
+% ++++++++++++++++++++++++++++++++
+\documentclass[twocolumn]{article}
+
+%\pagestyle{headings}
+%\setlength{\parindent}{0em}
+%\setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+% +++++++++++++++++++
+% The document itself
+% +++++++++++++++++++
+\begin{document}
+
+% ----------------------
+% Title page information
+% ----------------------
+\title{CIS--3152 Lab \#1\\Lab Tools}
+\author{Peter C. Chapin\thanks{Peter.Chapin@vtc.vsc.edu}\\
+  Vermont Technical College}
+\date{Last Revised: January 2, 2010}
+\maketitle
+
+\section*{Introduction}
+
+In the lab section of this course you will be using a number of software tools. The purpose of
+this first lab is to introduce you to these tools so that when you later have to use them in a
+serious way you will have some familiarity with them. In particular, in this lab you will
+experiment with
+
+\begin{enumerate}
+
+\item \textit{Visual Studio 2008}
+
+\item \textit{X-Win32}
+
+\item \textit{gcc}
+
+\item \textit{Wireshark}
+
+\item \textit{Subversion}
+
+\item \textit{\LaTeX}
+
+\end{enumerate}
+
+In addition you may wish to optionally experiment with
+
+\begin{enumerate}
+
+\item \textit{Open Watcom}
+
+\item \textit{Eclipse}
+
+\end{enumerate}
+
+This lab is intended to be fun. Feel free to experiment with any of the tools as much as you
+like.
+
+Note that it is possible for you to use all of the tools above on your own machine. Wireshark,
+Subversion, Open Watcom, and Eclipse are open source programs. The department's MSDN
+subscription allows you, as a student in our department, to use Visual Studio Professional on
+your own machine\footnote{You can also download the free Express version of Visual Studio
+  directly from Microsoft.}. X-Win32 is licensed by network address; you can install it on your
+own machine but it won't function outside the 155.42.*.* network. If you are interested in
+installing any or all of the tools above on your own computer, let me know and I will be happy
+to assist you.
+
+\section{Visual Studio 2008}
+
+You will be doing a considerable amount of C and C++ programming in this course. Some of this
+programming will be done using gcc on the Linux system \texttt{lemuria} that you will access
+remotely. Some of the programming will be done using Visual Studio on the Windows machines in
+the lab itself.
+
+\subsection*{Procedure}
+
+\begin{enumerate}
+
+\item On the class web site you will find a document describing how to set up a project using
+  Visual Studio 2005. Read over that document and set up a project named \texttt{daytime}
+  containing the daytime client program (on the class web site). Note that even though you are
+  using Visual Studio 2008 in lab, the procedure for creating a project is essentially identical
+  with that for Visual Studio 2005.
+
+\item Add a new project to your daytime solution that contains the daytime server program (on
+  the class web site). When you ``build the solution'' both the client and the server should be
+  compiled.
+
+\item Run the server on one of your allocated ports (see the class web site for a list of the
+  allocations). Run the client in a separate window and verify that it works as expected.
+
+\item Use the Visual Studio debugger to single step the client, inspect the value of variables,
+  etc.
+
+\item Visual Studio comes with a document reader that gives you access to the
+  MSDN\footnote{Microsoft Developer's Network} library. This library provides extensive
+  information on all aspects of Windows programming. Among other things, it serves as the ``man
+  pages'' for Windows system functions. As an example use the document reader to search for
+  information on the \texttt{socket()} function in the Platform SDK. Also look up
+  \texttt{WSASocket()} and compare the two functions. In Windows the \texttt{WSASocket()}
+  function is primitive and the \texttt{socket()} function is built on top of it.
+
+\end{enumerate}
+
+\section{X-Win32}
+
+Quite a bit of the programming you will do in this course will be on the department's Linux host
+\texttt{lemuria}. Note that \texttt{lemuria} is a multi-core Intel 64 system.
+
+Although it is perfectly acceptable to interact with \texttt{lemuria} using a text mode terminal
+program such as \texttt{PuTTY}, you may find it more interesting to use an X server to get a
+full graphical desktop on the system. In this part of the lab you will experiment with that.
+
+\subsection*{Procedure}
+
+On the class web site you will find a document that describes how to use the X-Win32 server to
+access the department's Linux hosts. Review that document and then log into \texttt{lemuria}
+using an X session. Be sure to log out of the host before closing X-Win32. Note that you may
+have to install the license key into your session. This is because X-Win32 stores licenses on a
+per-user basis. Copy and paste the key on the web page into the X-Win32 license tool.
+
+\section{gcc}
+
+You should also be comfortable with programming in the Linux environment. To practice that, do
+the following.
+
+\begin{enumerate}
+
+\item Log into \texttt{lemuria} (using either X or PuTTY) and download the Linux versions of the
+  daytime client and server programs, along with their associated make file. You can use this
+  make file as a skeleton for your own programs.
+
+\item Using the \texttt{make} utility, compile the two programs. Test them by running the server
+  on one of your allocated ports and then connecting to it with the client using the loopback
+  address of 127.0.0.1.
+
+\item Use your Windows client program to connect to your Linux server.
+
+\item Use the \texttt{gdb} debugger to single step and observe variables in your server while it
+  is handling a client.
+
+\item Use the Linux manual pages to look up information on the \texttt{socket()} function.
+
+\end{enumerate}
+
+\section{Wireshark}
+
+One of the tools that you will be using regularly is a network analyzer\footnote{Also called a
+  ``protocol analyzer.''}. This tool allows you to, among other things, observe the traffic on
+the network and to decode every frame. You will use the network analyzer to observe normal
+network behavior and to gain insight into how various network protocols actually work. You will
+also find it a valuable tool for debugging your network programs. The network analyzer will play
+the same role for you in this course as an oscilloscope plays in an electronics course. In this
+course you will be using the network analyzer called \textit{Wireshark}.
+
+\subsection*{Procedure}
+
+You will be particularly interested in the analyzer's ability to decode and filter frames. Note
+that the analyzer distinguishes between capture filters and display filters. A capture filter
+limits the frames that are stored in the analyzer's buffer. A display filter limits the frames
+that are displayed. Capture filters reduce the amount of memory needed to hold all the frames in
+a given session, but capturing everything and using display filters allows you to easily change
+your ``view'' of the session after the session has ended.
+
+Be aware that the lab we are using is switched. Only frames to and from your own machine and
+broadcast frames on the local subnetwork will be accessible to the analyzer. This is fine for
+analyzing software you are using or developing but it gives you no way to observe traffic
+between machines other than your own.
+
+\begin{enumerate}
+
+\item Start Wireshark, capture a few packets, and observe their decoding to familiarize yourself
+  with how Wireshark works in general.
+
+\item Using your Windows daytime client, connect to your Linux daytime server and use Wireshark
+  to observe the session. Use display filtering so that only the packets involved in the daytime
+  communication are shown.
+  
+\item Pick one of the decoded packets from above. What value does the time-to-live (TTL) field
+  have in the IP header? Is the TTL different in the client's and the server's packets?
+
+\end{enumerate}
+
+\section{Subversion}
+
+Subversion is an open source version control system. It is used to coordinate changes to a
+program that are made by multiple developers simultaneously. All significant programming
+projects use some kind of version control. In the second half of this course we will be working
+on a home-grown IM system called ``Chatter.'' This system uses a distributed object framework
+that is conceptually simple, yet surprisingly powerful. Chatter is stored in my personal
+Subversion repository.
+
+Using Subversion properly is somewhat complicated. Since it is team-oriented software, there is
+a significant social aspect to using it. We will go over these issues later.
+
+\subsection*{Procedure}
+
+On the class web site there is a document describing how to use Subversion. In the lab we have
+the TortoiseSVN client installed. Use it to check out the project at the URL
+
+\vspace{1.0ex}
+\centerline{\tt svn://whirlwind.cis.vtc.edu/Chatter}
+
+to some suitable location in your home directory on the file server. By doing a checkout to your
+home directory, your working copy of the project will be available to you anywhere you log in.
+
+TortoiseSVN normally modifies a file's icons to reflect their status as versioned files.
+However, by default it does not do this when the files are stored on a network drive. Probably
+you want these special icons enabled. To activate them, right click on a folder and select the
+TortoiseSVN option. Select ``Settings'' and then look for ``Icon Overlays'' under ``Look and
+Feel.'' Check the box for network drives. You may have to do this whenever you log into a new
+machine for the first time.
+
+Feel free to checkout a working copy of Chatter on \texttt{lemuria} as well. You will have to
+use the command line Subversion client \texttt{svn} on the Linux hosts. Type \texttt{svn help}
+for the syntax of the various command options.
+
+\section{Optional Tools}
+
+Some of you may wish to use alternate programming tools for certain assignments in this class.
+In particular, you may wish to use the Open Watcom compilers for your C and C++ programming. I
+will fully support the use of Open Watcom to the greatest extent feasible. However, be aware
+that certain programs that we will be writing later in the class require libraries that are only
+available for Visual C++ (and Java) so you won't be able to use Open Watcom for those
+assignments. However, Open Watcom should be fine for most of the required Windows programming.
+On the class web site you will find a page describing how to set up a project using the Open
+Watcom IDE.
+
+If you are interested in using Java or Scala for some of your programming, you should select a
+Java/Scala development environment. I recommend Eclipse with the Scala plug-in (if you plan to
+use Scala). Both Eclipse and the Scala plug-in are installed on all lab machines. On the class
+web site you will find a page describing how to set up a Java project using Eclipse.
+
+\section{Report}
+
+For this class I will require you to use the \LaTeX\ typesetting system to write your lab
+reports. Accordingly you should write a short report for this lab using \LaTeX\ so you can get
+used to using that system. The actual content of the report is not relevant (you can just say,
+``It was a really great lab''). The purpose of the report, like the purpose of the lab, is to
+just help you get familiar with the tools you will be using later.
+
+\LaTeX is installed on all lab machines so if you want you can prepare your report during the
+lab time as well.
+
+\end{document}
+

@@ -1,0 +1,194 @@
+
+Course: CIS-3152 at Vermont Technical College
+Lab   : UDP and the Domain Name System
+Name  : (C) Copyright 2007 by Peter C. Chapin
+Date  : 2007-03-11
+Format: text/plain
+
+===========================================================================
+
+Objective:
+---------
+
+The objective of this lab is to write a program that will query a domain name server for the IP
+address associated with a particular name. The program must build the query packet "by hand" and
+use UDP to send it. The program must also interpret the response packet as needed. The program
+is *not* to use the library function gethostbyname().
+
+Introduction:
+------------
+
+Applications mostly perform DNS queries using the function gethostbyname(). However, to get
+familar with exactly how DNS queries are done and with the general behavior of UDP protocols, in
+this lab I wrote out all the necessary code to construct a DNS query and interpret the name
+server's response manually.
+
+DNS queries normally use UDP because the data in a query and in the corresponding response is
+usually small enough to fit into a single packet. While it would be possible to use TCP in this
+application, the overhead involved in creating and tearing down the connection would be
+significant. One consequence of using UDP is that the application sending the query must be
+prepared to never get a response. UDP is unreliable and responses might be lost on the network.
+In my case, I used a timeout to control how long recvfrom() might be blocked.
+
+
+Overview of the DNS Protocol:
+----------------------------
+
+The domain name system is a distributed database using domain names as keys and associating with
+each domain name a number of records. The record type I am interested in here, and the most
+commonly accessed record type, is the IP address associated with the domain name (if any).
+
+The namespace of the domain name system is organized as a tree with different name servers
+managing the data for different subtrees. To look up information on a particular name, the
+client must send a "recursive" query to a local name server. If the local name server does not
+know the name (for example, it is not authoritative over the name nor does it have the name in
+its cache of names), it will contact one of several root name servers to find out about the
+name. The root server will return the IP address of a name server managing the subtree that
+contains the name and the local name server continues by contacting that new server. This
+process repeats until a name server with authoritative knowledge of the name is reached.
+
+When the client requests a recursive query, the client is unaware of these multiple lookup
+operations. From the client's point of view, the local name server returns the desired result
+directly.
+
+The precise format of the DNS packets is described in RFC-1035. One important point is that the
+same packet format is used for both the query and the corresponding reponse. In the query many
+of the fields are zero (the count of the number of answers for example). Note also that the
+server repeats the query in its response. Refer to RFC-1035, section 4 for more information.
+Here are a few points of particular interest to my program.
+
+1. The ID number field in the query is an arbitrary number selected by me. The server will
+   return the same ID number in its response so I can distinguish one response from another in a
+   case where I've sent multiple queries (for example to different servers).
+
+2. In the flags field the only 1 bit that I need is the RD, "recursion desired" bit. Setting
+   this bit indicates to my local name server that I want it to perform as many intermediate
+   lookups as necessary to get the final answer.
+
+3. All the count fields in my query will be zero except for the question count, which will be
+   one. I have only one question.
+
+4. The question itself contains a QNAME, which is the domain name I am looking up with each
+   component of the name prefixed by a count of the number of characters in that component. For
+   example, the name "linc.vtc.edu" would be represented as "4linc3vtc3edu0" where the numbers
+   are stored directly in their binary representations (not ASCII). Note the zero at the end to
+   terminate the string and to represent the name of the root component. The question also uses
+   a QTYPE of 1 and a QCLASS of 1.
+
+There is no padding in any of the fields above so it is entirely possible for the final QTYPE
+and QCLASS fields, which are 16 bit fields, to be misaligned. This has some implications on how
+the program should be implemented since on some systems, data alignment is enforced by the
+processor.
+
+The response is largely a copy of the query except that more of the flags are conditioned to
+indicate the status of the response. For example, there is an RCODE field in the response that
+indicates a return code from the server. If the query was successful this field should be zero.
+The response, of course, also contains an answer resource record as well as other resource
+records. In my program I am only interested in the answer and will ignore the other resource
+records.
+
+Note that since the answer resource record returned by the server contains a copy of the name in
+the question part of the response, the server can (and does) employ the compression method
+described in section 4.1.4 of RFC-1035. This allows the server to avoid sending two copies of
+the same data and thus keeps the response packet smaller than it would otherwise be. Since the
+DNS protocol uses UDP and since UDP works best if the request and response can both fit into
+single packets, this compression method is potentially important.
+
+The compressed name consists of two bytes where the most significant bits of the first byte are
+both one. The remaining bits specify an offset in the response packet where the previous
+occurance of the name can be found. My program correctly detects and handles responses using
+this compression method.
+
+
+Program Structure:
+-----------------
+
+The attached file, dns.c, contains my complete program written for use on the Linux operating
+system. It has been broken into several functions for ease of understanding. The main function
+sets up signal handling, creates a socket, and then calls separate functions to build a query
+packet, send the packet, get the response, and interpret the response. Signals are used to
+implement the timeout feature. In particular, just before recvfrom() is called the function
+alarm() is called to request the kernel to send a SIGALRM to the process after a certain amount
+of time (I'm using 10 seconds). The handler for SIGALRM that I install in main() does nothing,
+but its invocation does cause recvfrom() to return -1 with errno set to EINTR. This fact is used
+to detect the timeout.
+
+The DNS query packet is allocated and initialized in construct_query(). For convenience the
+header is represented as a structure. However, several of the fields after the header have to be
+filled in "raw." Notice that all the data is stored in network byte order and that the name is
+transformed according to the requirements of the DNS protocol outlined in the overview section
+above. This program only allows Internet A records to be queried. Function construct_query()
+returns a pointer to a dynamically allocated query packet.
+
+After it is constructed, the query is sent to the name server with send_query(). That function
+takes an open socket handle, the server's "name" (really an ASCII representation of its IP
+address), and the query packet that was returned from construct_query(). It fills in a
+sockaddr_in structure appropriately and uses the UDP sendto() function to send it.
+
+The recv_response() function gets the response from the name server. It allocates a block of
+memory large enough to hold the response, uses recvfrom() to get the response packet and returns
+the block of memory using OUT parameters (both the address and the length). Since receiving a
+response might timeout, this function also uses alarm() as I described above and returns -1 if a
+timeout occurs.
+
+The display_response() function takes the response packet and searchs it for the first answer
+record to display. This record might be "compressed" as described in RFC-1035 since it contains
+the same domain name as previously used in the question section. My function can handle both the
+compressed and uncompressed options.
+
+
+Testing and Discussion:
+----------------------
+
+I verified my ability to construct and send query packets by using the network analyzer to
+observe the outgoing packets on the cable. The network analyzer correctly decoded the packets
+suggesting that they were formatted appropriately. In addition, the name server did send a
+response packet with a success completetion code and with appropriate answers. I was able to
+verify this using the network analyzer before finishing my program. The final program does work
+as specified in the lab handout.
+
+I tried compiling my program on midnight as well as on the Linux systems in the lab. The program
+compiled and mostly ran fine on midnight. However, when I used certain names midnight did
+produce "unaligned access" errors when I ran the program. These errors are due to the way I am
+filling in the request packet. In particular, the lines
+
+  *(unsigned short *)question = htons(1);  // 'A' type query.
+  question += 2;
+  *(unsigned short *)question = htons(1);  // Internet address family.
+
+cause the problem. At this spot in the program "question" points at the location in the query
+packet where the query type and class are to be placed. Those values are both 16 bits so I used
+a cast to convert "question" (of type pointer to char) into a temporary pointer to short. On the
+IA-32 architecture it is possible to access a 16 bit value at any address. However on the Alpha
+architecture, accessing a 16 bit value at an odd address causes the unaligned access error.
+Depending on the length of the name, the address stored in "question" in the code above might be
+odd.
+
+This matter could be fixed by storing the query type and class a byte at a time. For example:
+
+  question[0] = 0;  // Use network byte order.
+  question[1] = 1;
+  question[2] = 0;
+  question[3] = 1;
+  question += 4;
+
+My program performs very inadequate error handling. Although it does properly timeout if the
+name server does not reply (or if the specified name server does not exist---which amounts to
+the same thing), there are several other places where errors checks should be used. For example,
+where memory is requested with malloc() the program should verify that the allocation was
+successful. The call of inet_pton() should be checked in case the user provided an invalid IP
+address on the command line. Finally better error checking on sendto() and recvfrom() should be
+added to alert the user to possible problems with the network.
+
+
+Conclusion:
+----------
+
+I was successfully able to build a DNS query program that worked in most cases. My program did
+format and send query packets correctly as shown by the network analyzer. It also properly
+extracted and displayed the first IP address in the response packet. My program did have some
+issues on midnight with misaligned access but I was able to explain those problems.
+
+My program does minimal error handling. Although it does properly time out if the server never
+responds (or if the response is lost on the network), most of the functions it uses are assumed
+to work. This should be corrected before this program is released for production use.

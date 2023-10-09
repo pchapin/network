@@ -1,0 +1,180 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE         : lab05.tex
+% AUTHOR       : (C) Copyright 2010 by Peter C. Chapin
+% SUBJECT      : IPv6 lab for CIS-3152
+%
+% In this lab the students will experiment with IPv6 on their Windows stations.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ++++++++++++++++++++++++++++++++
+% Preamble and global declarations
+% ++++++++++++++++++++++++++++++++
+\documentclass[twocolumn]{article}
+
+%\pagestyle{headings}
+%\setlength{\parindent}{0em}
+%\setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+% +++++++++++++++++++
+% The document itself
+% +++++++++++++++++++
+\begin{document}
+
+% ----------------------
+% Title page information
+% ----------------------
+\title{CIS--3152 Lab \#5\\IP Version 6}
+\author{Peter C. Chapin\thanks{Peter.Chapin@vtc.vsc.edu}\\
+  Vermont Technical College}
+\date{Last Revised: February 23, 2010}
+\maketitle
+
+\section{Introduction}
+
+In this lab you will demonstrate IPv6 communication between Windows XP stations, and tunneled
+IPv6 communications between Windows stations and a Unix server that are separated by an
+IPv4-only network. You will observe these communications on the network analyzer.
+
+\section{Setting up IPv6}
+
+\emph{This section requires administrative access to the machine.} Since IPv6 is an independent
+network protocol it must be installed along side the IPv4 protocol. In other words, having IPv4
+installed does not imply that IPv6 is also installed. Starting with Windows XP, Microsoft
+provides an IPv6 protocol driver ``out-of-the-box.'' However, IPv6 support is not turned on by
+default in Windows XP. To activate it, perform the following steps:
+
+\begin{enumerate}
+
+\item In the Control Panel, open ``Network Connections.'' Right click on the ``Local Area
+  Network'' connection and select ``Properties'' from the context menu.
+
+\item Click the ``Install'' button and select ``Protocol''. Click the ``Add'' button to add a
+  new protocol.
+
+\item You should find ``Microsoft TCP/IP version 6'' as an option. Select it and click ``OK'' to
+  install the protocol.
+
+\end{enumerate}
+
+After installing IPv6 it should show up in the list of installed protocols in the properties of
+the local area connection. If you select it you will notice that you do not have the option of
+clicking the ``Properties'' button. This implementation of IPv6 is not configurable in this way.
+However, one advantage of the IPv6 protocol is that it can auto-configure. For example your
+station will deduce its own link-local address and, using neighbor discovery protocol, will get
+its site-local (if applicable) and global address prefixes from the nearest IPv6 router.
+
+The Microsoft implementation of IPv6 is configurable, however, using certain command line tools.
+At a command prompt, type \texttt{ipv6 if} to list the IPv6 interfaces on your machine. You
+should find several of them. The interface labeled ``Local Area Connection'' is the real
+interface. The other interfaces are all virtual interfaces used for special purposes. What is
+the link-local address of your station on the LAN? You should also take note of the interface
+index value of your LAN connection (the small integer used to number the interfaces).
+
+You can use the \texttt{ping6} utility to ping another IPv6 station in the lab. This will verify
+that basic IPv6 connectivity is available\footnote{Due to firewall configurations, \texttt{ping}
+  might not respond even if IPv6 is working. However, you can use wireshark to observe the
+  outgoing ping packets anyway.}.
+
+\section{The Programs}
+
+For this lab you can download from the class web site the source code for the IPv6 versions of
+the daytime client and server. You should get both the client and server for both Windows and
+Linux even though you may not ultimately need all four programs. You might want to experiment
+with different combinations of client and server, however, especially to troubleshoot problems.
+Review the code for these samples and compile them on their respective platforms.
+
+\section{Procedure}
+
+The procedure below asks you to record header information from several packets on the network.
+Our interest in this lab is with the IP layer headers (not TCP nor Ethernet) so focus on those
+headers only. You don't need to record every field, but certain source and destination addresses
+should be noted. Some other fields might be interesting as well.
+
+\begin{enumerate}
+
+\item Your instructor will run an IPv6 version of the daytime server on the instructor's station
+  in the lab. He will post the link-local address of that station on the board for reference.
+  Demonstrate that the client works correctly with the server. Observe the connection with
+  Wireshark and decode the IPv6 packets. Record the header information from a typical packet
+  (for example the packet containing the client's initial SYN segment).
+
+\item Compile the daytime server for Linux and run it on \texttt{lemuria}. Use the globally
+  unique local address for
+  \texttt{lemuria}\footnote{\texttt{FD25:F376:7B60:0001:021E:4FFF:FE30:D903}} and attempt to
+  connect to it. Decode the network traffic using Ethereal. The connection should fail, but what
+  do you see in the network analyzer?
+  % Note that on the Windows machines in the lab, the SYN segment is sent to the default 6to4
+  % gateway. I believe this is because the machines have no global address and thus don't know
+  % what else to do with the packet. As a result the packet is encapsulated, which was not the
+  % intent of this section.
+
+\item Using the Linux server again, attempt to connect to it using the server's 6to4 address.
+  Decode the network traffic and record the header information from a typical packet. Be sure to
+  record information from both the IPv6 header and the enclosing IPv4 header.
+  % Be sure the firewall on the Linux machine allows IPv6 connections to the appropriate port.
+  % Note that settings in iptables are for IPv4. There is a separate ip6tables for IPv6.
+
+\item Use your workstation's automatic tunneling interface to connect to the Linux server. Again
+  observe the traffic and record the header information from a typical packet.
+  % This section doesn't seem to work (at least I couldn't figure out how to make it work).
+
+\item Use the IPv4 daytime client (from a previous lap) to connect to the Linux server. What
+  address does the server display for the client? Once again observe the traffic and record the
+  header information from a typical packet.
+  % It's important that the students see an IPv6 server handling connections from IPv4 only
+  % clients.
+
+\end{enumerate}
+
+\section{Report}
+
+There is no formal report for this lab. Turn in the information you recorded in the procedure
+above.
+
+\appendix
+
+\section{Configuring IPv6 Addresses (Linux)}
+
+On a Linux system you can use \texttt{ifconfig} to associate an IPv6 address with a particular
+interface. The syntax to use is as follows.
+\begin{verbatim}
+ifconfig eth0 inet6 <addr>/<prefix-length>
+\end{verbatim}
+
+\section{Configuring 6to4 Tunnels (Linux)}
+
+This information describes how to configure a 6to4 tunnel endpoint on a Linux machine. It was
+taken from the Linux IPv6 ``How To'' document.
+
+\begin{enumerate}
+\item Create a new tunnel device.
+\begin{verbatim}
+/sbin/ip tunnel add tun6to4 mode sit ttl \
+  64 remote any local <localipv4addr>
+\end{verbatim}
+
+\item Bring the interface up.
+\begin{verbatim}
+/sbin/ip link set dev tun6to4 up
+\end{verbatim}
+
+\item Add local 6to4 address to the interface. Note that the prefix length \emph{must} be 16.
+\begin{verbatim}
+/sbin/ip -6 addr add <local6to4addr>/16 \
+  dev tun6to4
+\end{verbatim}
+
+\item Add default route to the global IPv6 network using the all-6to4-routers IPv4 anycast
+  address.
+\begin{verbatim}
+/sbin/ip -6 route add 2000::/3 via \
+  ::192.88.99.1 dev tun6to4 metric 1
+\end{verbatim}
+
+  Note that some versions of \texttt{ip} (such as the version with SUSE Linux) does not support
+  the IPv4-compatible IPv6 addresses for gateways. In that case the related IPv6 address of the
+  gateway has to be used instead (\texttt{2002:C058:6301::1}).
+\end{enumerate}
+
+\end{document}
+

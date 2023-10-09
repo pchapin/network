@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+    <title>CIS-3152 Exam #1</title>
+    <meta content="Peter C. Chapin" name="author" />
+  </head>
+
+  <body>
+    <h1>CIS-3152 Exam #1</h1>
+
+    <p><i>Due: Friday, April 11, 2014</i></p>
+
+    <p>This exam covers all material up to and including email protocols.</p>
+    <ol>
+      <li><p>The call to <tt>connect</tt> in a typical sockets based TCP program uses a second
+      argument that looks like <tt>(struct sockaddr *) &amp;server_address</tt> where
+      <tt>server_address</tt> is a <tt>struct sockaddr_in</tt>. Why is the type conversion
+      necessary? In other words: why wasn't <tt>connect</tt> declared to take a <tt>struct
+      sockaddr_in *</tt> in the first place?</p></li>
+
+      <li><p>What is the advantage of using a concurrent TCP server? On the other hand, under
+      what conditions would it be appropriate to use an iterative TCP server?</p></li>
+
+      <li><p>Answer two of the three questions below.</p>
+      <ol>
+        <li>When a client program calls <tt>connect</tt>, what state or states in the TCP state
+        diagram does the connection touch?</li>
+        <li>What is the difference between "active close" and "passive close?"</li>
+        <li>What sequence of states does the TCP connection touch when the side doing the
+        passive close calls <tt>close</tt>? You can assume normal, error free behavior.</li>
+      </ol>
+      </li>
+
+      <li><p>UDP is an unreliable protocol. However, some services are most appropriately
+      implemented as UDP services rather than using the more reliable TCP (DNS and TFTP are like
+      this). Give at least one <em>advantage</em> that UDP has over TCP in these cases. Under
+      what conditions is the unreliability of UDP not an issue?</p></li>
+
+      <li><p>A program that uses UDP will use the <tt>sendto</tt> and <tt>recvfrom</tt>
+      functions instead of the <tt>send</tt>/<tt>recv</tt> or <tt>write</tt>/<tt>read</tt>
+      functions that a TCP based program would use. The <tt>sendto</tt> and <tt>recvfrom</tt>
+      functions both take a pointer to a sockaddr structure as a parameter. What is the purpose
+      of this parameter and why do the UDP functions require it while the TCP functions do
+      not?</p></li>
+
+      <li><p>An earlier version of the Pegasus Mail program allowed you to compose mail
+      off-line. When you were finished writing the mail and clicked on "Send" the message was
+      put into a queue for delivery when Pegasus Mail was once again connected to the network.
+      However, the Date field on the outgoing message was set to when it was actually
+      transmitted across the network; sometimes several hours after it was queued for delivery.
+      Is this behavior correct? Justify your answer with appropriate reference to
+      RFC-5322.</p></li>
+
+      <li><p>What's the difference between a MIME Content-Transfer-Encoding of "8bit" and a
+      Content-Transfer-Encoding of "binary?" Justify your answer with appropriate reference to
+      RFC-2045.</p></li>
+
+      <li><p>What is the base64 encoding of the UTF-8 string "=α="? What is the quoted printable
+      encoding of the same string? Note that the character between the equals sign is the lower
+      case greek letter alpha. You'll need to look up its Unicode code point (<a
+      href="http://www.unicode.org">http://www.unicode.org</a>) and then convert it to UTF-8
+      form to know exactly what binary bytes are to be encoded.</p></li>
+
+      <li><p>Skim over RFC-1896 on the text/enriched MIME type. Use a text editor to manually
+      construct a short message that demonstrates some of the features of enriched text. Don't
+      forget to include appropriate RFC-5322 and MIME related header fields on your message so
+      that it is a valid message.</p></li>
+
+      <li><p>It is possible to send HTML mail (Content-Type: text/html) such that links to
+      embedded images in the message refer to message attachments. This allows a person to email
+      a complex document, complete with images, as an entirely self-contained message. Describe
+      how this works (give references to appropriate documentation).</p></li>
+    </ol>
+
+    <hr style="width: 100%; height: 2px;" />
+    <address>
+      © Copyright 2014 by <a href="mailto:PChapin@vtc.vsc.edu">Peter C. Chapin</a><br/>
+      Last Revised: 2014-03-23
+    </address>
+  </body>
+</html>

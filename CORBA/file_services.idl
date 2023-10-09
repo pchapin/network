@@ -1,0 +1,41 @@
+/*****************************************************************************
+FILE          : file_services.idl
+PROGRAMMER    : Peter Chapin
+LAST REVISION : 2003-02-01
+
+(C) Copyright 2003 by Peter Chapin
+
+This file contains the IDL specification of a simple file server.
+
+Please send comments or bug reports to
+
+     Peter Chapin
+     Vermont Technical College
+     Randolph Center, VT 05061
+     pchapin@ecet.vtc.edu
+*****************************************************************************/
+
+module FileServices {
+
+  enum OpenMode { READ, WRITE };
+
+  interface File {
+
+    typedef sequence<octet, 1024> DataBlockType;
+
+    // Reads size octets from the file and returns what it gets.
+    DataBlockType read(in short size);
+
+    // Writes data to the file and returns number of octets written.
+    short write(in DataBlockType data);
+
+    // Closes the file.
+    void close();
+  };
+
+  interface FileServer {
+    File open(in string name, in OpenMode mode);
+  };
+
+};
+

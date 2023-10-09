@@ -1,0 +1,60 @@
+
+CIS-3152: Homework #5 Answers.
+(C) Copyright 2009 by Peter C. Chapin
+=====================================
+
+1.
+
+> Classic SMTP is a stop and wait protocol. Stop and wait protocols are
+> normally inefficient. However, RFC-2920 defines an SMTP extension called
+> "pipelining" that clients and servers can use to enhance SMTP performance
+> on such networks. However, pipelining will not significantly speed up
+> every SMTP transaction. In what situations would SMTP pipelining be a
+> real help? In what situations would it not make much difference?
+
+SMTP pipelining allows multiple commands to be sent by the client without
+having to wait for the server to respond to each command. This can
+streamline the transfer of information by eliminating (or at least
+reducing) the effect of the network transit time on the overall average
+data transfer rate.
+
+Note that since TCP is a windowed protocol, bulk data will be transferred
+efficiently regardless. Thus SMTP pipelining is only really useful in the
+case when the email messages are small (insignificant amount of bulk data)
+and the number of messages sent to a particular destination is large (large
+amount of normally stop-and-wait exchanges). SMTP pipelining will not
+improve the speed at which a single large message is sent.
+
+2. 
+
+> What does the SMTP command "VRFY" do?
+
+Section 4.1.1.6 of RFC-5321 says:
+
+   This command asks the receiver to confirm that the argument identifies a
+   user or mailbox. If it is a user name, information is returned as
+   specified in section 3.5.
+
+It can be used to check the validity of an email address without, for
+example, trying to send a "probe" message to that address. Note that there
+are security implications to this command. Sites may wish to disable it or
+only allow authenticated users to access it.
+
+3. 
+
+> In some cases an SMTP server may reply to a client query with a multiline
+> reply. Describe exactly the format these multiline replies must use. In
+> which section(s) of RFC-5321 is this format specified?
+
+Section 4.2.1 of RFC-5321 says:
+
+   The format for multiline replies requires that every line, except the
+   last, begin with the reply code, followed immediately by a hyphen, "-"
+   (also known as minus), followed by text. The last line will begin with
+   the reply code, followed immediately by <SP>, optionally some text, and
+   <CRLF>. As noted above, servers SHOULD send the <SP> if subsequent text
+   is not sent, but clients MUST be prepared for it to be omitted.
+
+4.
+
+> Show the client side SMTP state diagram you used in lab.

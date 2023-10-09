@@ -1,0 +1,112 @@
+
+CIS-3152: Worksheet #4 Answers.
+(C) Copyright 2009 by Peter C. Chapin
+=====================================
+
+1.
+
+> IPv6 defines the concept of an "anycast" address. What does this mean?
+> Can you think of an interesting application of such addresses? What
+> problems can you see with using them? HINT: Think about what anycast
+> addresses imply for routers. See RFC-2373.
+
+An IPv6 anycast address is assigned to multiple interfaces. The IPv6
+routing infrastructure will deliver a packet with an anycast destination
+address to the single "nearest" interface with that address. Here nearness
+is measured according to the routing algorithms that are being used.
+
+The use of anycast addresses is still experimental. However, one potential
+use that comes to mind is automatic load balancing. Suppose a heavily used
+service is implemented on several servers spread over the network. Suppose
+also that every server is identical in that every server can, potentially,
+service the requests of any client. To balance the load on the servers,
+clients should distribute their requests at random. However, such an
+approach can increase long distance network traffic and thus network
+congestion. It also requires all clients to know about all servers---an
+unrealistic expectation in general.
+
+Another load balancing method might be to give the service an anycast
+address. Every client then accesses the service using a single address that
+represents any of the servers. The IPv6 routers choose the actual server
+that is used.
+
+Probably the service needs to be a UDP based service. It might be difficult
+to maintain a TCP connection to a server using an anycast address. For
+example some TCP segments on the connection could get routed to a different
+server causing the other server to reply with RST segments. However, the
+root DNS servers might be excellent candidates for this anycast method of
+load balancing. The root DNS servers use UDP, experience heavy loading, and
+are widely distributed. Currently DNS systems need to maintain a changing
+list of root DNS server IP addresses. If they all used a single anycast
+address instead the set of root DNS servers could change without there
+being a need to update the root lists on all the other DNS servers in the
+world. Furthermore the IPv6 routers could automatically direct root DNS
+queries to the nearest root server.
+
+One complication in using anycast addresses is that the routers must know
+about the particular anycast addresses in use and the location of all the
+servers participating in an anycast service. Currently routers are not this
+"smart".
+
+
+2.
+
+> What is Classless Interdomain Routing (CIDR) and how does it relate to
+> IPv6?
+
+CIDR refers to the practice of splitting an address into a prefix
+describing the network on which the host is located and a specific host
+number on that network. Unlike the old class-based system the number of
+bits used for a prefix is variable and changes depending on the context.
+For example, high level routers might make routing decisions based on only
+a few bits of prefix information, sending packets for a large number of
+related addresses in the same general direction. In contrast routers on a
+local network will use a large number of prefix bits to distinguish one
+individual link from another. This approach implies that hosts with similar
+addresses will be topologically "close" on the network.
+
+IPv6 uses CIDR style addresses by design. In contrast CIDR was added to
+IPv4 long after IPv4's initial deployment. As a result many pre-CIDR
+addresses are still being used in the IPv4 world, unnecessarily clogging up
+routing tables.
+
+3.
+
+> Every link that will carry IPv6 needs to support a certain minimum MTU
+> (Maximum Transmission Unit) size. What is that size? Provide a reference.
+> The mimimum MTU for IPv6 is larger than that for IPv4. Will this prevent
+> IPv6 from being sent over some links currently in use? Explain.
+
+In section five (Packet Size Issues) of RFC-2460 we have:
+
+   IPv6 requires that every link in the internet have an MTU of 1280 octets
+   or greater. On any link that cannot convey a 1280-octet packet in one
+   piece, link-specific fragmentation and reassembly must be provided at a
+   layer below IPv6.
+
+The larger minimum MTU size will not necessary prevent IPv6 from being used
+on some links where IPv4 is currently being used. In cases where the larger
+packets won't fit the link itself could provide some sort of fragmentation
+as mentioned in the quote above.
+
+
+4.
+
+> Look up "Teredo Tunneling" online and write a short description (two or
+> three sentences) that describes what it is and why it is useful. Give a
+> reference for any source that you use.
+
+6to4 tunneling requires the machine that is the tunnel endpoint to have a
+global IPv4 address. However, machines that are behind NAT (Network Address
+Translation) devices are normally using private ("non-routable") IPv4
+addresses. These machines can't use 6to4 tunneling.
+
+Teredo Tunneling puts IPv6 packets into UDP datagrams that are encapsulated
+in IPv4 packets. NAT devices will pass UDP datagrams (using the port
+mapping techniques that are normal for NAT), thus allowing machines behind
+a NAT device to use IPv6 tunnels. Note that for a machine using Teredo
+Tunneling to communicate with native IPv6 machines, it is necessary to use
+a "Teredo relay." Such a machine is where the IPv6 packets are decapsulated
+from the UDP datagrams and then routed on to their final destination.
+
+For more details see: http://en.wikipedia.org/wiki/Teredo_tunneling.

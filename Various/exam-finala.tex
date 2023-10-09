@@ -1,0 +1,346 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE         : final.tex
+% AUTHOR       : (C) Copyright 2008 by Peter C. Chapin
+% LAST REVISED : 2008-05-03
+% SUBJECT      : Final for CIS-3152
+%
+% Send comments or bug reports to:
+%
+%       Peter C. Chapin
+%       Electrical and Computer Engineering Technology
+%       Vermont Technical College
+%       Randolph Center, VT 05061
+%       Peter.Chapin@vtc.vsc.edu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{examdesign}
+
+\usepackage{newvbtm}
+
+% Options.
+\Fullpages
+\NoRearrange
+% \NoKey
+\NumberOfVersions{1}
+
+% Class and exam information.
+\class{CIS-3152}
+\examname{Final}
+
+% This setting seems to be ignored (in the answer key at least).
+% \setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+\newverbatim{codelisting}{}{}{}{}
+
+\newsavebox{\udpQuestion}
+\newsavebox{\xmlQuestion}
+
+\begin{document}
+
+\begin{lrbox}{\udpQuestion}%
+\begin{minipage}{0.9\textwidth}
+\begin{codelisting}
+// Receive a packet from the server.
+address_size = sizeof(struct sockaddr_in);
+recv_count = recvfrom(
+  socket_handle,
+  data_packet,
+  DATA_LENGTH,
+  0,
+  (struct sockaddr *)&incoming_address,
+  &address_size
+);
+\end{codelisting}%
+\end{minipage}%
+\end{lrbox}
+
+\begin{lrbox}{\xmlQuestion}%
+\begin{minipage}{0.9\textwidth}
+\begin{codelisting}
+<xs:element name="recipe">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element name="ingredient" type="xs:string"
+                  minOccurs="1" maxOccurs="unbounded"/>
+      <xs:element name="procedure" type="xs:string"/>
+    </xs:sequence>
+    <xs:attribute name="type" type="xs:string" use="required"/>
+  </xs:complexType>
+</xs:element>
+\end{codelisting}%
+\end{minipage}%
+\end{lrbox}
+
+\begin{examtop}
+  \parbox{3in}{\classdata \\
+               \examtype, Form: \fbox{\textsf{\Alph{version}}}}
+  \hfill
+  \parbox{3in}{\normalsize Name: \hrulefill \\[2.0ex]
+                           Date: \hrulefill }
+  \bigskip
+
+\end{examtop}
+
+\begin{truefalse}[title={True/False}]
+  
+Answer each of the following questions `T' for true or `F' for false. If you want to change an
+answer, write over the old answer with an `X' and then write the new answer beside the old
+answer. Each question is worth two points.
+
+%  % Client/server programming with sockets.
+%  \begin{question}
+%  \answer{F} When programming with TCP sockets, it is the client program that calls
+%  \texttt{accept()} to create a new connection.
+%  \end{question}
+
+  % TCP protocol.
+  \begin{question}
+  \answer{F} TCP requires that both ends of the connection use the same initial sequence
+  numbers.
+  \end{question}
+  
+%  % UDP protocol.
+%  \begin{question}
+%  \answer{T} UDP based protocols are easier to implement if the service provided is idempotent.
+%  \end{question}
+
+  % Trivial FTP.
+  \begin{question}
+  \answer{T} The trivial FTP protocol as we implemented in lab does not use TCP.
+  \end{question}
+  
+%  % IPv6.
+%  \begin{question}
+%  \answer{F} To use IPv6, the TCP protocol must be modified.
+%  \end{question}
+
+  % Character sets and Unicode.
+  \begin{question}
+  \answer{T} The UTF-8 encoding of Unicode is a variable length encoding.
+  \end{question}
+
+%  % Mail protocols.
+%  \begin{question}
+%  \answer{T} Legacy SMTP (that is, SMTP with no extensions) is a stop-and-wait protocol.
+%  \end{question}
+
+  % MIME.
+  \begin{question}
+  \answer{F} It is not possible to use base64 encoding for text/plain message bodies.
+  \end{question}
+  
+%  % XML.
+%  \begin{question}
+%  \answer{T} An XML schema is a description of the allowed structure of specific kinds of XML
+%  documents.
+%  \end{question}
+
+  % Middleware.
+  \begin{question}
+  \answer{T} The Ice middleware platform allows systems to be written in a variety of
+  programming languages.
+  \end{question}
+
+\end{truefalse}
+
+\begin{multiplechoice}[title={Multiple Choice}]
+  
+  Indicate the \emph{best} answer in each of the following questions by circling the appropriate
+  letter. If you want to change an answer, mark over your old answer with an `X' and circle your
+  new answer. Each question is worth two points.
+  
+%  % Client/server programming with sockets.
+%  \begin{question}
+%    A TCP connection is defined by
+%    
+%    \choice{The socket handle returned by \texttt{socket}.}
+%    \choice[!]{The IP address and port number associated with each end point.}
+%    \choice{The type of service that is accessed over the connection.}
+%    \choice{The address given to \texttt{inet\_pton}.}
+%  \end{question}
+
+  % TCP protocol.
+  \begin{question}
+    When doing bulk data transfers, TCP is usually a better choice than UDP because
+
+    \choice{There is less overhead in establishing the connection.}
+    \choice{The packets are larger.}
+    \choice{Each packet is acknowledged.}
+    \choice[!]{It is a windowed protocol and hence able to use the network capacity more
+    efficiently.}
+  \end{question}
+
+%  % UDP protocol.
+%  \begin{question}
+%    When programming with UDP it is important
+%
+%    \choice{To connect to the destination machine before trying to send any packets.}
+%    \choice{To prepare the data as a stream to be sent in a single unit.}
+%    \choice[!]{To arrange for all calls to \texttt{recvfrom} to time out if no packet is received.}
+%    \choice{To avoid waiting for a reply packet before sending the next outgoing packet.}
+%  \end{question}
+
+  % Trivial FTP.
+  \begin{question}
+    A file transfer application is not normally a good application for UDP. However, the Trivial
+    FTP protocol uses UDP anyway because
+
+    \choice[!]{That way it can be implemented on a system with very few resources.}
+    \choice{It is only used with very small files.}
+    \choice{It does not need to be fast.}
+    \choice{It is only used with files that do not need to be transfered with 100\% accuracy
+    (such as multimedia files).}
+  \end{question}
+
+%  % IPv6.
+%  \begin{question}
+%    The purpose of an IPv6 configured tunnel is
+%
+%    \choice{To allow IPv6/IPv4 hosts a way of communicating with IPv4-only hosts.}
+%    \choice{To allow IPv6/IPv4 hosts a way of communicating with each other over an IPv4
+%    infrastructure.}
+%    \choice[!]{To allow IPv6-only hosts a way of communicating with each other over an IPv4
+%    infrastructure.}
+%    \choice{To allow IPv6 routers a way of communicating with each other over an IPv4
+%    infrastructure.}
+%  \end{question}
+
+  % Character sets and Unicode.
+  \begin{question}
+    The purpose of the byte order mark in UTF-16 is
+
+    \choice{For compatibility with older character encodings.}
+    \choice[!]{To give the receiving application a way of detecting the endian-ness of the
+    character stream.}
+    \choice{To let the recieving application know that UTF-16 is being used.}
+    \choice{To indicate the start of Unicode text.}
+  \end{question}
+
+%  % Mail protocols.
+%  \begin{question}
+%    When the MIME standard was created, there was no need to change the SMTP protocol to support
+%    MIME. The fundamental reason for this is
+%
+%    \choice{MIME was designed with SMTP's limitations in mind.}
+%    \choice{MIME has nothing to do with SMTP. However, it was necessary to make some adjustments
+%    to the format of email messages as described in the earlier version of RFC-2822.}
+%    \choice[!]{MIME is higher in the protocol stack and thus MIME encoded messages are just
+%    uninterpreted data to an SMTP server.}
+%    \choice{SMTP servers had by that time been upgraded to support the more modern message
+%    format described in RFC-2822.}
+%  \end{question}
+
+  % MIME.
+  \begin{question}
+    Quoted printable encoding is useful because
+
+    \choice{It is faster to process on 64 bit machines.}
+    \choice{It can transform binary data into plain ASCII text.}
+    \choice[!]{The encoded output is still nearly readible text if the input was mostly US-ASCII
+    already.}
+    \choice{The encoded output is essentially the same size as the input.}
+  \end{question}
+
+%  % XML.
+%  \begin{question}
+%    XML documents can be tested for validity by generic validator programs (such as XSV). In an
+%    application where XML is being used, what is the value in insisting that all documents are
+%    valid?
+%
+%    \choice{It ensures that all documents can be properly styled to HTML (with the use of a
+%    suitable XSLT style sheet).}
+%    \choice{It ensures that all documents conform to the XML standard.}
+%    \choice{It forces all documents to be syntactically correct and thus easier to read.}
+%    \choice[!]{It simplifies error handling because valid documents must exhibit a specific
+%    structure. Thus the application does not need to check for violations of that structure.}
+%  
+%  \end{question}
+
+  % Middleware.
+  \begin{question}
+    In the Ice middleware system a ``proxy'' is
+
+    \choice{An object that performs protocol translations on behalf of another object.}
+    \choice[!]{A kind of pointer that refers to objects potentially located on remote machines.}
+    \choice{An object implementing the \texttt{Ice::Proxy} interface.}
+    \choice{A way of accessing the \texttt{Chatter} name service.}
+  \end{question}
+
+\end{multiplechoice}
+
+\pagebreak
+
+\begin{shortanswer}[title={Short Answer}]
+  
+  Answer three of the four following questions. \emph{Cross out the question you do not want
+  graded!} Each question is worth 10 points.
+
+  \begin{question}
+    Consider the code fragment below. This is taken from a UDP client program. Explain the
+    purpose of each of \texttt{recvfrom}'s arguments.
+
+    \bigskip
+    \usebox{\udpQuestion}
+    \bigskip
+
+    \begin{answer}
+    \end{answer}
+    \pagebreak
+  \end{question}
+
+  \begin{question}
+    IPv6 addresses define three different ``scopes.'' What are those scopes and in what
+    situations would each scope be used? Would it make sense for a host to have three different
+    address (one in each scope) at once?
+
+    \begin{answer}
+    \end{answer}
+    \pagebreak
+  \end{question}
+
+  \begin{question}
+    Show the complete SMTP conversation you would expect to see when foo.com tries to send a
+    mail message to bar.gov. Let the message be from satan@hell.net to god@heaven.org. For this
+    question you can just indicate the message content itself as ``*message*'' in your answer.
+
+    \begin{answer}
+    \end{answer}
+    \pagebreak
+  \end{question}
+
+%  \begin{question}
+%    Show a MIME multipart/alternative message for the email described in the question above. Let
+%    the first part be type text/plain and the second part be type text/html. Let the content be
+%    ``Busy today? Want to do lunch?''
+%
+%    \begin{answer}
+%    \end{answer}
+%    \pagebreak
+%  \end{question}
+
+  \begin{question}
+    Consider the fragment of an XML schema shown below. Show a corresponding fragment of an XML
+    document that conforms to this schema.
+
+    \bigskip
+    \usebox{\xmlQuestion}
+    \bigskip
+
+    \begin{answer}
+    \end{answer}
+    \pagebreak
+  \end{question}
+
+%  \begin{question}
+%    Suppose one defined an Ice interface to an email server as an alternative to SMTP for
+%    sending mail. What advantages and disadvantages would such an interface have over the
+%    traditional approach?
+%
+%    \begin{answer}
+%    \end{answer}
+%    \pagebreak
+%  \end{question}
+
+\end{shortanswer}
+
+\end{document}

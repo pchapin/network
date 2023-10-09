@@ -1,0 +1,14 @@
+
+CIS-3152: Worksheet #2 Solution.
+(C) Copyright 2013 by Peter C. Chapin
+=====================================
+
+1.
+
+> As the first step in creating a fully correct threaded version of the daytime server, make the
+> following changes to the sample server provided on HackBox (don't forget to do an svn update
+> command in the Samples folder first).
+
+The solution to this problem has been committed to the repository. Do an 'svn update' to get it
+(but be sure to move your work out of the way first).
+

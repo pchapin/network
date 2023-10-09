@@ -1,0 +1,152 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE         : final.tex
+% AUTHOR       : (C) Copyright 2009 by Peter C. Chapin
+% LAST REVISED : 2009-04-26
+% SUBJECT      : Final for CIS-3152
+%
+% Send comments or bug reports to:
+%
+%       Peter C. Chapin
+%       Computer Information Systems Department
+%       Vermont Technical College
+%       Randolph Center, VT 05061
+%       Peter.Chapin@vtc.vsc.edu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{examdesign}
+
+\usepackage{newvbtm}
+
+% Options.
+\Fullpages
+\NoRearrange
+% \NoKey
+\NumberOfVersions{1}
+
+% Class and exam information.
+\class{CIS-3152}
+\examname{Final}
+
+% This setting seems to be ignored (in the answer key at least).
+% \setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+\newverbatim{codelisting}{}{}{}{}
+
+\newsavebox{\udpQuestion}
+
+\begin{document}
+
+\begin{lrbox}{\udpQuestion}%
+\begin{minipage}{0.9\textwidth}
+\begin{codelisting}
+// Receive a packet from the server.
+address_size = sizeof(struct sockaddr_in);
+recv_count = recvfrom(
+  socket_handle,
+  data_packet,
+  DATA_LENGTH,
+  0,
+  (struct sockaddr *)&incoming_address,
+  &address_size
+);
+\end{codelisting}%
+\end{minipage}%
+\end{lrbox}
+
+% \bigskip
+% \usebox{\udpQuestion}
+% \bigskip
+
+\begin{examtop}
+  \parbox{3in}{\classdata \\
+               \examtype, Form: \fbox{\textsf{\Alph{version}}}}
+  \hfill
+  \parbox{3in}{\normalsize Name: \hrulefill \\[2.0ex]
+                           Date: \hrulefill }
+  \bigskip
+\end{examtop}
+
+\begin{shortanswer}[title={Short Answer}]
+  
+  Answer five of the seven following questions. \emph{Cross out the questions you do not want graded. Only five questions will be graded regardless of how many you answer!} Each question is worth 10 points.
+
+  % TCP/UDP Programming
+  \begin{question}
+    Answer the following questions about sockets API programming on Unix.
+    \begin{enumerate}
+      \item What is a socket?
+      \item TCP client and server programs have a different structure. What is the most significant difference between them?
+      \item How does a UDP client program differ from a TCP client program? (Describe the difference in terms of the functions used).
+    \end{enumerate}
+
+    \begin{answer}
+    \end{answer}
+    \pagebreak
+  \end{question}
+
+  % TCP internals
+  \begin{question}
+    Answer the following questions about TCP protocol internals.
+    \begin{enumerate}
+      \item What does a TCP receiver do if it receives a segment out of order?
+      \item What is the ``congestion window'' and who controls its size (sender or receiver)?
+      \item How does TCP manage flow control between the sender and receiver?
+    \end{enumerate}
+    
+    \begin{answer}
+    \end{answer}
+    \pagebreak
+  \end{question}
+
+  % UDP vs TCP, concurrent servers vs iterative servers.
+  \begin{question}
+    Under what conditions is it appropriate to use an iterative server (as opposed to a concurrent server)? Under what conditions is it appropriate to use UDP (as opposed to TCP)?
+    \begin{answer}
+    \end{answer}
+    \pagebreak
+  \end{question}
+
+  % Character sets
+  \begin{question}
+    Answer the following questions about character sets.
+    \begin{enumerate}
+      \item Which encoding results in a more compact representation of Unicode text: UTF-8 or UTF-16? Explain.
+      \item What are ``combining characters?''
+      \item Some character sets make use of ``shift states.'' A special code changes the interpretation of following characters until a second special code shifts the interpretation back to its original meaning. What are the advantages and disadvantages of such an approach?
+    \end{enumerate}
+    \begin{answer}
+    \end{answer}
+    \pagebreak
+  \end{question}
+
+  % Mail Protocols
+  \begin{question}
+    It would be possible to build a remote procedure call system similar to Ice using RFC-5322 email messages to transport arguments and return values. In general terms describe how it might work. What advantages and disadvantages would there be to doing this?
+    \begin{answer}
+    \end{answer}
+    \pagebreak
+  \end{question}
+  
+  % XML
+  \begin{question}
+    When defining a file format for use by an application (configuration files, data files, etc), there are several advantages to using an XML format. What are they? Are there any disadvantages to using an XML format?
+    \begin{answer}
+    \end{answer}
+    \pagebreak
+  \end{question}
+  
+  % Ice
+  \begin{question}
+    Ice is a type of ``middleware.'' Describe what middleware is in the context of networking, what services it provides, and how it fits into the OSI model.
+
+    \begin{answer}
+     Middleware is a layer that exists above the OSI transport layer and below the application layer. It provides a framework that allows an application to be distributed over several machines. The middleware layer deals with network communication issues (setting up and managing connections) as well as data formatting issues. For example, the middleware layer converts data back and forth as necessary so that it is properly interpreted on different platforms. In some cases the middleware layer provides operating system-like services.
+
+     It is important to realize that the middleware layer is not part of an application. It provides service of interest to many applications. However, from the operating system's point of view, the middleware layer appears to be part of the application because it rides on top of the transport layer (the highest layer known to most operating systems). Most operating systems are unaware of the existance of middleware.
+    \end{answer}
+    \pagebreak
+  \end{question}
+
+\end{shortanswer}
+
+\end{document}

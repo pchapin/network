@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+  <title>CIS-3152 Homework #5</title>
+  <meta content="Peter C. Chapin" name="author" />
+</head>
+
+<body>
+<h1>CIS-3152 Homework #9 (XML)</h1>
+
+<p><em>Due: Friday, April 16, 2010</em></p>
+
+<p>This homework covers XML, XPath, and XSLT.</p>
+<ol>
+
+  <li><p>Consider the following fragment of an XML Schema that defines an
+    element <span style="font-family: monospace;">xyzzy</span>. Show <span style="font-weight:
+    bold;">three</span> example instances of an <span style="font-family:
+    monospace;">xyzzy</span> element that conform to this schema.</p>
+
+    <pre>&lt;element name="xyzzy"&gt;<br />  &lt;xs:complexType&gt;<br />    &lt;xs:sequence&gt;<br />      &lt;xs:element name="a" type="xs:string"/&gt;<br />      &lt;xs:choice minOccurs="1" maxOccurs="2"/&gt;<br />        &lt;xs:sequence&gt;<br />          &lt;xs:element name="b" minOccurs="1" maxOccurs="unbounded" type="xs:string"/&gt;<br />          &lt;xs:element name="c" minOccurs="0" type="xs:date"/&gt;<br />        &lt;/xs:sequence&gt;<br />        &lt;xs:element name="d" type="xs:string"/&gt;<br />      &lt;/xs:choice&gt;<br />    &lt;/xs:sequence&gt;<br />  &lt;/xs:complexType&gt;<br />&lt;/element&gt;</pre>
+  </li>
+
+  <li><p>Consider Recipe Markup Language (RML) as developed in class. Enhance the schema so that
+    recipes can include a &lt;rating&gt; element that contains information about the recipe's
+    rating. The idea is to allow document authors to classify a recipe in some way ("good",
+    "bad"). The specifics are up to you. However, consider that authors might wish to search for
+    recipes with a particular rating. Authors will also want to include comments. Your solution
+    for this question should include the modified RML schema. You don't need to provide a
+    specific instance document.</p></li>
+
+  <li><p>Consider the short XML instance document below. This document is in "memo markup
+    language." It is complete (the <span style="font-family: monospace;">memo</span> element is
+    the root element for the document). Show XPath expressions that select the following node
+    sets from this document. You can assume the context node is the node for
+    the <span style="font-family: monospace;">memo</span> element.</p>
+
+    <ol>
+      <li><p>All <span style="font-family: monospace;">para</span> elements.</p></li>
+      <li><p>The first <span style="font-family: monospace;">bold</span> element in the
+        second <span style="font-family: monospace;">para</span> element.</p></li>
+      <li><p>All <span style="font-family: monospace;">para</span> elements marked
+        "secret."</p></li>
+      <li><p>The last memo recipient.</p></li>
+    </ol>
+    <pre>&lt;memo&gt;<br />  &lt;to&gt;Jill&lt;/to&gt;<br />  &lt;to&gt;Alice&lt;/to&gt;<br />  &lt;to&gt;Bob&lt;/to&gt;<br />  &lt;para type="normal"&gt;<br />    This is &lt;bold&gt;bold text&lt;/bold&gt;.<br />  &lt;/para&gt;<br />  &lt;para type="normal"&gt;<br />    This is &lt;bold&gt;bold&lt;/bold&gt; text. &lt;bold&gt;Really bold&lt;/bold&gt;.<br />  &lt;/para&gt;<br />  &lt;para type="secret"&gt;<br />    I'm going to fire John. He is a loser.<br />  &lt;/para&gt;<br />&lt;/memo&gt;</pre>
+  </li>
+
+  <li><p>Below is the start of an XSL stylesheet that converts memo markup language into XHTML.
+    Complete this stylesheet to a sufficient degree that the example memo in question #2 is
+    transformed into reasonable XHTML.</p>
+
+    <pre>&lt;xsl:template match="memo"&gt;<br />  &lt;html&gt;<br />  &lt;head&gt;&lt;title&gt;MEMO&lt;/title&gt;&lt;/head&gt;<br />  &lt;body&gt;<br />    &lt;!-- Finish me! --&gt;<br />  &lt;/body&gt;<br />  &lt;/html&gt;<br />&lt;/xsl:template&gt;</pre>
+  </li>
+</ol>
+</body>
+</html>

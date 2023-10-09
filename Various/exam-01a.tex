@@ -1,0 +1,141 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE         : exam-01a.tex
+% AUTHOR       : (C) Copyright 2010 by Peter C. Chapin
+% LAST REVISED : 2010-03-12
+% SUBJECT      : Exam #1 for CIS-3152
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{examdesign}
+
+% Options.
+\Fullpages
+\NoRearrange
+% \NoKey
+\NumberOfVersions{1}
+
+% Class and exam information.
+\class{CIS--3152}
+\examname{Exam \#1}
+
+% This setting seems to be ignored (in the answer key at least). \setlength{\parskip}{1.75ex
+%   plus0.5ex minus0.5ex}
+
+\begin{document}
+
+% I can't seem to be able to use namedata@vspace below (see documen- tation). I can use the
+% default \namedata but I can't seem to redefine \namedata to suite my needs.
+%
+\begin{examtop}
+  \parbox{3in}{\classdata \\
+               \examtype, Form: \fbox{\textsf{\Alph{version}}}}
+  \hfill
+  \parbox{3in}{\normalsize Name: \hrulefill \\[2.0ex]
+                           Date: \hrulefill }
+  \bigskip
+\end{examtop}
+
+\begin{shortanswer}
+  \begin{question}
+    What is the advantage of using a concurrent TCP server? On the other hand, under what
+    conditions would it be appropriate to use an iterative TCP server?
+
+    \begin{answer}
+      A concurrent server is able to service multiple connections at the same time. This is
+      essential in cases where the time required to service a connection is long or outside the
+      control of the server. For example if the client intends to download a large file or if
+      the server is concerned that a client might connect and then wait indefinitely before
+      issuing any commands, the server should be a concurrent server.
+
+      An iterative server is appropriate in cases where the time required to service a
+      connection is short and totally under the control of the server. For example in the
+      daytime protocol, as soon as the client connects, the server sends a short string and then
+      does the active close. There is nothing the client can do to extend the connection time.
+      An iterative server works in this case and is easier to write.
+    \end{answer}
+  \end{question}
+  
+\pagebreak
+
+  \begin{question}
+    Suppose you use netstat to observe a TCP connection on your machine and find it in the
+    SYN\_SENT state. What does this tell you? Observing a connection in the SYN\_SENT state is
+    unusual. Why don't you normally see it?
+
+    \begin{answer}
+      The SYN\_SENT state occurs just after TCP sends its initial SYN segment and before it has
+      received the corresponding SYN/ACK segment. This happens at the very beginning of a
+      connection. If a connection is stuck in this state it means that no SYN/ACK has been
+      received from the other side. Most likely the remote machine does not exist or is
+      unavailable. You don't normally see connections in SYN\_SENT because under ordinary
+      conditions the time spent in that state is very small.
+      
+      Note that if the remote machine was reachable but just was not listening on the
+      destination port, the remote machine would have sent an ICMP ``Port unreachable'' message
+      and the connection would have been aborted at once. Thus you would not expect to see the
+      connection in the SYN\_SENT state under these circumstances.
+    \end{answer}
+  \end{question}
+
+\pagebreak
+
+  \begin{question}
+    What does it mean to say that TCP is a ``windowed'' protocol? What is the difference between
+    the congestion window and the receiver window?
+    
+    \begin{answer}
+      TCP is a windowed protocol in contrast to a ``stop and wait'' protocol. In the stop and
+      wait case, the sender would wait for an acknowledgment of each segment sent before sending
+      the next segment. In cases where the round trip time between sender and receiver is long,
+      this results in very slow transfer rates. Instead TCP defines a ``window'' the size of
+      which defines how much data can be in transit on the network at any given time. Under
+      ideal conditions, this allows the sender to send continuously; each acknowledgment
+      releasing some space in the window for the next segment to send.
+      
+      TCP actually defines two windows: the congestion window and the receiver window. The
+      congestion window reflects the sender's estimate of how much material the network can
+      ``hold.'' The receiver window reflect's the amount of space left in the receiver buffer.
+      By using the minimum of these two window sizes, the sender tries to avoid overload either
+      the network or the receiver, whichever is more limited.
+    \end{answer}
+  \end{question}
+
+\pagebreak
+
+  \begin{question}
+    TCP's congestion avoidance algorithm requires reasonably accurate round trip times in order
+    to estimate an appropriate retransmission timeout interval. What happens if TCP thinks the
+    round trip time is longer than it actually is? What happens if TCP thinks the round trip
+    time is shorter than it actually is?
+
+    \begin{answer}
+      If the estimated round trip time (RTT) is too large, TCP will wait too long before timing
+      out lost segments. The result is inefficient data transfer. If the estimated RTT is too
+      small, TCP will timeout segments prematurely and make unnecessary retransmissions, thus
+      adding to network congestion.
+    \end{answer}
+  \end{question}
+
+\pagebreak
+
+  \begin{question}
+    A program that uses UDP will use the \texttt{sendto()} and \texttt{recvfrom()} functions
+    instead of the \texttt{send()}/\texttt{recv()} or \texttt{write()}/\texttt{read()} functions
+    that a TCP based program would use. The \texttt{sendto()} and \texttt{recvfrom()} functions
+    both take a pointer to a sockaddr structure as a parameter. What is the purpose of this
+    parameter and why do the UDP functions require it while the TCP functions do not?
+
+    \begin{answer}
+      The address of the remote host is provided to (or from) TCP when the connection is
+      established (during \texttt{connect()} for the client or \texttt{accept()} for the
+      server). Since that address remains the same for the duration of the connection there is
+      no need to provide it again during the read/write operations.
+
+      In contrast UDP does not have connections. Thus the address of the remote host must be
+      provided to (or obtained from ) each read/write operation separately. This is the purpose
+      of the sockaddr structure mentioned above.
+    \end{answer}
+  \end{question}
+
+\end{shortanswer}
+\end{document}

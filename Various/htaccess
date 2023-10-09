@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Course Files"
+AuthUserFile .htpasswd
+Require user student

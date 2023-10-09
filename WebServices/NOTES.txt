@@ -1,0 +1,10 @@
+To deploy a web service on Axis:
+
+1. Start the Axis server and do:
+   java org.apache.axis.client.AdminClient 
+     -lhttp://localhost:8081/axis/services/AdminService deploy.wsdd
+
+2. In the same directory where the Axis engine runs:
+   java org.apache.axis.utils.Admin client|server deploy.wsdd
+
+This assumes you have created an appropriate wsdd file.

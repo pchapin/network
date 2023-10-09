@@ -1,0 +1,95 @@
+
+CIS-3152: Homework #9 Answers.
+(C) Copyright 2009 by Peter C. Chapin
+=====================================
+
+1.
+
+> Consider the following fragment of an XML Schema that defines an element
+> xyzzy. Show two example instances of an xyzzy element that conform to
+> this schema.
+
+<xyzzy>
+  <a>Content of element 'a'</a>
+  <!-- Make the choice twice, using the second possibility both times. -->
+  <d>Content of first element 'd'</d>
+  <d>Content of second element 'd'</d>
+</xyzzy>
+
+<xyzzy>
+  <a>Content of element 'a'</a>
+  <!-- Make the choice once, using the first possibility (sequence). -->
+  <!-- Create several 'b' elements (limit is unbounded). -->
+  <b>Content of first element 'b'</b>
+  <b>Content of second element 'b'</b>
+  <b>Content of third element 'b'</b>
+  <!-- Element 'c' is optional so ignore it. -->
+</xyzzy>
+
+<xyzzy>
+  <a>Content of element 'a'</a>
+  <!-- Make the cnoice once, using the first possibility (sequence). -->
+  <!-- Include the optional 'c' element. -->
+  <b>Content of element 'b'</b>
+  <c>20090416</c>
+</xyzzy>
+
+2.
+
+> Consider Recipe Markup Language (RML) as developed in class. Enhance the
+> schema so that recipes can include a <rating> element that contains
+> information about the recipe's rating. The idea is to allow document
+> authors to classify a recipe in some way ("good", "bad"). The specifics
+> are up to you. However, consider that authors might wish to search for
+> recipes with a particular rating. Authors will also want to include
+> comments. Your solution for this question should include the modified RML
+> schema. You don't need to provide a specific instance document.
+
+...
+
+3.
+
+> Consider the short XML instance document below. This document is complete
+> (the memo element is the root element for the document). Show XPath
+> expressions that select the following node sets from this document. You
+> can assume the context node is the node for the memo element.
+>
+>   1. All para elements.
+>   2. The first bold element in the second para element.
+>   3. All para elements marked "secret."
+>   4. The last memo recipient.
+
+  1. para
+
+  2. para[2]/bold[1]
+
+  3. para[@type="secret"]
+
+  4. to[last()]
+
+4.
+
+> Below is the start of an XSL stylesheet that converts "memo markup
+> language" into XHTML. Complete this stylesheet to a sufficient degree
+> that the example memo in question #2 is transformed into reasonable
+> XHTML.
+
+<xsl:template match="memo">
+  <html>
+  <head><title>MEMO</title></head>
+  <body>
+    <xsl:apply-templates select="to"/>
+    <xsl:apply-templates select="para"/>
+  </body>
+  </html>
+</xsl:template>
+
+<!-- Process the memo recipients. -->
+<xsl:template match="to">
+  <p>TO: <b><xsl:value-of select="."/></b></p>
+</xsl:template>
+
+<!-- This template ignores paragraph types and bold text. -->
+<xsl:template match="para">
+  <p><xsl:value-of select="."/></p>
+</xsl:template>

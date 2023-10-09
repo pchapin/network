@@ -1,0 +1,91 @@
+
+Lab #1
+------
+
+This lab is quite short; many students finish it in only 1 to 1.5 hours. This isn't necessarily
+a problem, though, for a first lab. It might make sense, however, to have some kind of checklist
+for them to hand in. I'm imagining a form where they fill in the answers to some of the
+questions asked in the handout. That way there would be good documentation that everyone did
+what was asked.
+
+
+Lab #2
+------
+
+This lab fills three hours but most students were able to complete it during that time. It
+definitely helps to provide them with specific preparation on what they need to do.
+
+Lab #3
+------
+
+This lab is quite a bit shorter than Lab #2. However, students who don't have a working Windows
+client from Lab #2 have more trouble. It might make sense to provide a working client for those
+cases. That way students in that situation are able to complete this lab without necessarily
+having Lab #2 100% in order.
+
+Lab #4
+------
+
+There are two versions of this lab: one based on the DNS protocol and another based on the TFTP
+protocol. Both of the labs entail quite a bit of programming and the students often have trouble
+with just the mechanics of C. Note that both labs are also about UDP based protocols, which is
+the primary point of them. Plan on giving the students two weeks for these labs.
+
+Lab #5
+------
+
+This is a quick "fun" lab on IPv6. The current form of the lab has the students using provided
+programs (the daytime client/server) and observing IPv6 traffic between them. There is no
+report, but the students should have to turn in their observations so that there is
+documentation that they completed the lab.
+
+Lab #6
+------
+
+The MailFlux lab is quite interesting. It's the student's first exposure to C++ in this course.
+Also the MailFlux code uses makefiles, Doxygen style comments, and is stored in a Subversion
+repository. This provides good opportunities to talk about some of these incidental issues as
+well. In 2009 the students implemented the client side of the SMTP conversation using a finite
+state machine.
+
+Lab #7
+------
+
+Lab #8
+------
+
+In this lab the students did some work on the XEmail project by enhancing the XEmail schema. I
+only had the students turn in their new schema together with an instance document that
+demonstrated the new features. There was no formal report. In 2007 the students added support
+for MessageIDs and simple attachments. Note that MailFlux is stored in pchapin's Subversion
+repository. It may need to be moved in the future.
+
+In general the students did very well on this lab; most of them got high grades since the XML
+validation process verified the correctness of their work. A few students did not properly
+specify cardinality values, etc, but those errors were relatively minor.
+
+Lab #9
+------
+
+There was no formal report for this lab either. The students simply turned in a listing of their
+program. I kept the job fairly simple because many students had trouble understanding how the
+SAXExample.cpp program worked. The way the lab is current written there are really only two
+functions the students need to modify: startElement() and endElement(). Once they came to
+realize this, they did fine. As with Lab #7 the grades tended to be high.
+
+Lab #10
+-------
+
+This lab also had no formal report. The students had some trouble with it because their
+understanding of C pointers is weak.
+
+Lab #11
+-------
+
+This lab *did* have a formal write-up. The problem in 2007 was to add support for a chat room
+server to the Chatter system. This problem proved to be quite difficult for the students. Six
+weeks of lab time was not enough (only one student in the class got the final system to work). I
+may have not prepared the students well enough, although I think they would have been more
+successful if they had spent some time studying the Chatter system as provided before coming to
+lab.
+

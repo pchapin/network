@@ -1,0 +1,164 @@
+
+CIS-3152: Homework #4 Solution.
+(C) Copyright 2013 by Peter C. Chapin
+=====================================
+
+1.
+
+> An earlier version of the Pegasus Mail program allowed you to compose mail off-line. When you
+> were finished writing the mail and clicked on "Send" the message was put into a queue for
+> delivery when Pegasus Mail was once again connected to the network. However, the Date field on
+> the outgoing message was set to when it was actually transmitted across the network; sometimes
+> several hours after it was queued for delivery. Is this behavior correct? Justify your answer
+> with appropriate references to the RFCs.
+
+RFC-5322 addresses this question directly in Section 3.6.1 on "The Origination Date Field."
+
+   The origination date specifies the date and time at which the creator of the message
+   indicated that the message was complete and ready to enter the mail delivery system. For
+   instance, this might be the time that a user pushes the "send" or "submit" button in an
+   application program. In any case, it is specifically not intended to convey the time that the
+   message is actually transported, but rather the time at which the human or other creator of
+   the message has put the message into its final form, ready for transport. (For example, a
+   portable computer user who is not connected to a network might queue a message for delivery.
+   The origination date is intended to contain the date and time that the user queued the
+   message, not the time when the user connected to the network to send the message.)
+
+This makes it clear that the version of Pegasus Mail mentioned above exhibits incorrect
+behavior.
+
+2.
+
+> What's the difference between a MIME Content-Transfer-Encoding of "8bit" and a
+> Content-Transfer-Encoding of "binary?" Justify your answer with appropriate references to the
+> RFCs.
+
+Sections 2.8 and 2.9 in RFC-2045 address this issue as quoted here
+
+   2.8.  8bit Data
+
+      "8bit data" refers to data that is all represented as relatively short lines with 998
+      octets or less between CRLF line separation sequences [RFC-821]), but octets with decimal
+      values greater than 127 may be used. As with "7bit data" CR and LF octets only occur as
+      part of CRLF line separation sequences and no NULs are allowed.
+
+   2.9.  Binary Data
+
+      "Binary data" refers to data where any sequence of octets whatsoever is allowed.
+
+Roughly this means that "8bit" data is still line oriented and CR and LF can only be used
+together in their role as a line terminator. In contrast "binary" data imposes no restrictions
+on where CR and LF can appear. There is no line structure in "binary" data.
+
+3.
+
+> What is the base64 encoding of the UTF-8 string "=α="? What is the quoted printable encoding
+> of the same string? Note that the character between the equals signs is the lower case Greek
+> letter alpha. You'll need to look up its Unicode code point (http://www.unicode.org) and then
+> convert it to UTF-8 form to know exactly what binary bytes are to be encoded.
+
+The lower case Greek alpha has a Unicode code point of U+03B1. The UTF-8 encoding of this
+character is 0xCE, 0xB1. The '=' character has a Unicode code point of U+003D. Thus the UTF-8
+encoding of the given string is
+
+     0x3D 0xCE 0xB1 0x3D
+
+The base64 encoding of this is
+
+    Pc6xPQ==
+
+To see this, begin by expanding the first three bytes in binary
+
+    00111101 11001110 10110001
+
+Organize these bits into groups of six
+
+    001111 011100 111010 110001
+
+Looking up these values in the base64 alphabet returns
+
+    P      c      6      x
+
+Next consider the remaining byte
+
+    00111101
+
+Organize into groups of six bits, using zeros to pad.
+
+    001111 010000
+    P      Q      =      =
+
+This gives the final string of "Pc6xPQ=="
+
+The quoted printable encoding of the given string is simply
+
+    =3D=CE=B1=3D
+
+Note that '=' can't represent itself in quoted printable encoding.
+
+4.
+
+> Skim over RFC-1896 on the text/enriched MIME type. Using a text editor manually construct a
+> short message that demonstrates some of the features of enriched text. Don't forget to include
+> appropriate RFC-2822 and MIME related header fields on your message.
+
+Here is my test message
+
+----> cut <----
+From: Peter C. Chapin <pchapin@ecet.vtc.edu>
+To: pchapin@sover.net
+Subject: Test of text/enriched MIME messages.
+Date: 01 Apr 2008 06:00 -0400
+MIME-Version: 1.0
+Content-Type: text/enriched
+
+This is a simple test of enriched text. This is <bold>bold</bold>. This is
+<italic>italic</italic>. This is <underline>underline</underline>. This is
+<color><param>red</param>red</color>. This is <smaller>small
+text</smaller>. This is <bigger>big text</bigger>.
+
+
+<center>This is centered text</center>
+----> cut <----
+
+5.
+
+> It is possible to send HTML mail (Content-Type: text/html) such that links to embedded images
+> in the message refer to message attachments. This allows a person to email a complex document,
+> complete with images, as an entirely self-contained message. Find out how this works (give
+> references to appropriate documentation).
+
+RFC-2557, "MIME Encapsulation of Aggregate Documents, such as HTML (MHTML)," describes how this
+is done. The basic idea is to create a multipart/related message where the first part is the
+HTML document itself and the additional parts are the resources referenced by that document.
+
+There are actually a couple of ways to do this. The most common way involves using the
+Content-ID of resource in the URL inside the HTML document. This approach does involve rewriting
+the HTML document. The following is Example 9.5 from RFC-2557.
+
+      From: foo1@bar.net
+      To: foo2@bar.net
+      Subject: A simple example
+      Mime-Version: 1.0
+      Content-Type: multipart/related; boundary="boundary-example";
+              type="text/html"
+
+      --boundary-example
+      Content-Type: text/html; charset="US-ASCII"
+
+      ... text of the HTML document, which might contain a URI
+      referencing a resource in another body part, for example
+      through a statement such as:
+      <IMG SRC="cid:foo4@foo1@bar.net" ALT="IETF logo">
+
+      --boundary-example
+      Content-Location: CID:something@else ; this header is disregarded
+      Content-ID: <foo4@foo1@bar.net>
+      Content-Type: IMAGE/GIF
+      Content-Transfer-Encoding: BASE64
+
+      R0lGODlhGAGgAPEAAP/////ZRaCgoAAAACH+PUNvcHlyaWdodCAoQykgMTk5
+      NSBJRVRGLiBVbmF1dGhvcml6ZWQgZHVwbGljYXRpb24gcHJvaGliaXRlZC4A
+      etc...
+
+      --boundary-example--

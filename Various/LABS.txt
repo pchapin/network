@@ -1,0 +1,77 @@
+
+CIS-3152 Lab Sequence
+(C) Copyright 2013 by Vermont Technical College
+===============================================
+
+1. Introduction to HackBox and some of the software tools on it that we will be using in the
+   lab. This lab is intended to be such that it could be done with even zero lecture support.
+
+2. Concurrent TCP Servers. In this lab, the students implement a "Quote of the Day" server on a
+   Unix system (a concurrent server where they can see the effects of fork and how to handle
+   SIGCHLD).
+
+Choose one of the two following versions of Lab #3.
+
+3a. UDP and the DNS system. In this lab the students will write a program that does a DNS query
+   on a standard name server. Instead of using gethostbyname(), etc, they will construct their
+   own query packets. Here I can talk about the difference between UDP and TCP, etc.
+
+3b. Trivial FTP. In this lab the students will implement a TFTP client and server and consider
+   the issues associated with UDP programming and the construction of transport protocols in
+   general.
+
+NOTE: Lab #3 is used as an ABET assessment of the outcome: "Develop network applications..."
+
+4. Character Conversions. In this lab the students write a simple program to convert character
+   encodings (in Java) and use that program to explore different Unicode encodings.
+
+5. MailFlux. In this lab the students develop an SMTP server in Java. This gives them an
+   opportunity to really dig into the SMTP protocol. This lab is an ongoing project. Each year
+   builds on the work of the previous years.
+
+6. XML Schema. In this lab the students develop a schema for course evaluation markup language.
+   This a simple markup but it exercises a number of interesting schema features. Right now this
+   lab is quick and easy. With more time it might be possible to take this lab quite a bit
+   further.
+
+7. XSLT. In this lab the students will write a simple XSLT style sheet that formats course
+   evaluation markup language into HTML. Note that this lab assumes some familarity with basic
+   HTML markup (the CPEs might not have that background).
+
+8. Chatter. In this lab the students develop a simple instant messaging system using the Ice
+   system for communication. In the 2007 version of this lab the students implemented a program
+   that manages multiple chat rooms. This is an ongoing project.
+
+*****
+
+The following lab exists in the lab set, but it has not been used in a number of years (and
+hence are very out of date).
+
+? MIME. In this lab the students experiment with manually creating different MIME messages
+   using various MIME features, both common and obscure.
+
+? SAX. In this lab the students write (really modify) a C++ program that processes XEmail XML
+   documents using SAX.
+
+? RPC. In this lab the students write a simple RPC client and server to allow the client to get
+   rudimentary file access to files residing on the server. The idea here is to get the students
+   thinking about some of the issues that NFS has to deal with as well as practice using a
+   distributed object technology.
+
+? HTTP. In this lab I have the students observe some HTTP transactions with the network
+   analyzer. I then have them write, in Java, a simple client program that fetches a document
+   from a handy server and stores it in a file.
+
+Here are some more ideas for potential labs.
+
+? LDAP. In this lab the students should interact with a directory server in some interesting
+   way.
+
+? Another nice RPC example would be to have the students build a weather server. It would also
+   be cool to show how a local web server could invoke a CGI script to produce nice, human
+   accessible web pages while an RPC server could provide the information to client software in
+   a way that would be more acceptable to programs. (Perhaps this would be a better experiment
+   for a web services lab). [Could this be integrated with NetWeather??]
+
+? NFS. Set up an NFS client/server and then observe the RPC conversation on the network
+   analyzer. Alternatively perhaps an NCP or CIFS/SMB lab could be created.

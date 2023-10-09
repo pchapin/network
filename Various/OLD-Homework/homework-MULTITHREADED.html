@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+    <title>CIS-3152 Homework #2</title>
+    <meta content="Peter C. Chapin" name="author" />
+  </head>
+
+  <body>
+    <h1>CIS-3152 Homework #2 (Multi-threaded Servers)</h1>
+
+    <p><i>Due: Friday, February 1, 2013</i></p>
+    
+    <p>This homework covers basic multi-threaded programming. You might find my <a
+    href="../pthread/pthread-Tutorial.pdf">pthread tutorial</a> to be a useful resource. Read
+    sections 2.4, 2.6, and 2.7 in the text.</p>
+
+    <ol>
+      <li><p>As the first step in creating a fully correct threaded version of the daytime
+      server, make the following changes to the sample server provided on HackBox (don't forget
+      to do an <tt>svn update</tt> command in the <tt>Samples</tt> folder first).</p>
+
+        <ul>
+          <li>Move the loop that accepts connections and creates threads for servicing clients
+          into its own function.</li>
+
+          <li>Move the signal handling loop, currently in a separate thread to the bottom of the
+          <tt>main</tt> function.</li>
+
+          <li>Just before the signal handling loop, create a thread that runs the function
+          holding the accept loop (the function you made in the first step above).</li>
+
+          <li>When the server is being shutdown use <tt>pthread_cancel</tt> to terminate the
+          thread running the accept loop. You should also close the listening handle.</li>
+        </ul>
+
+        <p>You will need to use <tt>pthread_setcanceltype</tt> to change the accept loop's
+        cancelability type to <tt>PTHREAD_CANCEL_ASYNCHRONOUS</tt> just before it calls
+        <tt>accept</tt> (otherwise attempts to cancel the thread while it is in <tt>accept</tt>
+        will fail). Set the cancelability type back to <tt>PTHREAD_CANCEL_DEFERRED</tt> when
+        <tt>accept</tt> returns.</p>
+
+        <p>These changes set the stage for cleaningly processing any active connections when a
+        shutdown is attempted. Although not part of this assignment, the overall steps would be
+        to first cancel the "main" loop so that new clients are not accepted (which you are
+        doing above) and then shut down any remaining active threads in a sensible manner (which
+        you don't need to worry about now).</p></li>
+    </ol>
+  </body>
+</html>

@@ -1,0 +1,208 @@
+
+CIS-3152: Homework #5 Answers.
+(C) Copyright 2008 by Peter C. Chapin
+=====================================
+
+
+1.
+
+> What is the difference between a characters "code point" and its
+> "encoding?" Why is this distinction important? Why doesn't it come up for
+> documents using the US-ASCII character set?
+
+The code point is the numeric value assigned to a character in the abstract
+character set. However, when the character is saved to a file or
+transmitted over the network it may first be encoded into a different value
+or sequence of values. This might be done to save space (by encoding common
+characters with fewer bytes) or to conform to restrictions on the channel
+(for example if the channel only supports 7 bit bytes).
+
+The issue of encoding doesn't come up for ASCII because ASCII is a very
+small character set and can be represented with only 7 bits. Thus in an
+overwhelming number of cases, ASCII characters can by represented directly
+by their code points without creating problems.
+
+2.
+
+> French Canadians spell Quebec as "Québec". The 'é' character has a
+> Unicode code point of U+00E9. What byte sequence would be used to
+> represent "Québec" in UTF-8 encoding? What about UTF-16 encoding?
+
+The encoding of U+00E9 in UTF-8 is as follows:
+
+  Raw bits : 0000,0000,1110,1001
+  Reference: 0000,0yyy,yyxx,xxxx
+  Encoded (bin) : [1100,0011], [1010,1001]
+  Encoded (hex) : 0xC3, 0xA9
+
+The other characters have US-ASCII representations and are thus encoded
+with the US-ASCII, single byte values. The result is
+
+  0x51 0x75 0xC3 0xA9 0x62 0x65 0x63
+
+Notice that the string contains 7 bytes even though the original text
+contained only 6 characters.
+
+In UTF-16 the encoding might look like
+
+  0xFE 0xFF 0x00 0x51 0x00 0x75 0x00 0xE9 0x00 0x62 0x00 0x65 0x00 0x63
+
+The first two bytes are the byte order mark. They are used so that the
+receiving system can deduce the endianess of the stream. They may not be
+necessary if this text is part of a larger file and the byte order mark
+appeared earlier or if the receiving system knows the endianess through
+some other means. Notice that the UTF-16 encoded string encodes the U+00E9
+naturally but that the string is 12 (or 14) bytes long as compared to the 7
+bytes required for the UTF-8 string. UTF-8 does a much more space-efficient
+job of encoding the original text because most of the characters in the
+original text are just ASCII.
+
+Notice also that the UTF-16 string, in this case, contains a zero byte as
+every other byte. Since many programs (especially programs written in C)
+tend to regard the zero byte as a null character, these programs will often
+truncate UTF-16 strings (if they are not expecting them) to a single
+character. Note that in UTF-16 the null character is two zero bytes in a
+row.
+
+3.
+
+> The files test-UTF8.txt and test-UTF16.txt contain a short sample of text
+> encoded using UTF-8 and UTF-16 respectively (the sample I went over in
+> class). Try loading these files into at least two different text editors
+> and report on how well they are handled. Note that the UTF-8 encoded file
+> is not using a BOM (some editors depend on the BOM to auto-detect Unicode
+> text) so you might have to "force" it to be loaded using UTF-8 encoding.
+> Note also that the text contains an example of a combining character.
+
+jEdit (v4.3pre12) handles both files in essentially the correct way. I have
+my jEdit configured to use UTF-8 by default so it loaded and rendered
+test-UTF8.txt correctly without any extra work from me. It saw the BOM in
+the test-UTF16.txt file and loaded it correctly as well using its
+"autodetect encoding" feature. Note that in both cases the combining
+character is processed in a reasonable way but the resulting on-screen
+appearence of the final character is not identical to the on-screen
+appearence of the precombined version of that character.
+
+Emacs for Windows (v21.3)handles the UTF-8 file approximately right, but
+doesn't do as good a job with it as jEdit. I have my Emacs configured to
+use the UTF-8 "language environment" by default so it reads the UTF-8 file
+without any extra work from me. However, it does not process the combining
+character correctly, showing it instead as an additional "garbage"
+character immediately following the 'u'. Also, the version of Emacs that
+I'm using does not appear to support UTF-16. When I try to load the UTF-16
+file I see mostly garbage (the normal characters separated by ^@, the Emacs
+rendering of the null character). There is no UTF-16 language environment
+that I can try.
+
+Although the question only asks for two editors, I couldn't resist trying
+Notepad++ (v4.8.2). It works better than Emacs but not as well as jEdit. It
+loads and renders both the UTF-8 and UTF-16 files the same way. Note that I
+have also configured my Notepad++ to use UTF-8 by default. It calls the
+UTF-16 file "UCS-2 Big Endian." UCS-2 is the ISO10646 name for UTF-16. The
+endianness was deduced from the BOM. However, Notepad++ does not process
+the combining character correctly. Instead it shows it as a garbage
+character following the 'u'.
+
+4.
+
+> Research how modern C++ deals with non-ASCII character sets. Can you
+> write a C++ program that manipulates Unicode strings? Can you write a C++
+> program that uses Unicode characters in variable names and string
+> literals? You don't actually have to write such programs; I'm only asking
+> you if it is possible.
+
+C++ programs can manipulate Unicode text using so called "wide characters."
+Actually it is implementation defined what character is used for wide
+characters... different compilers could use different character sets.
+However, the trend among modern C++ compilers is to use Unicode in this
+case. Note that Open Watcom currently uses a certain Japanese character set
+for wide characters because the old Watcom compiler had a significant
+Japanese market. It is on our "to-do" list to change wide character support
+to Unicode but it is a low priority.
+
+Here is a sample C++ program using wide characters.
+
+#include <iostream>
+#include <string>
+
+int main()
+{
+  std::wstring s = L"Québec";   // Wide string holds wide characters.
+
+  const wchar_t *p = s.c_str(); // p is a pointer to a wide character.
+
+  // Print the string one character at a time.
+  while (*p) {
+    std::wcout << *p;           // Use a wide character output operation.
+    ++p;
+  }
+  std::cout << "\n";
+}
+
+This program is correctly handled by Microsoft Visual C++ v9. Note that the
+output of the program is in UTF-8 encoding by default, but this is allowed
+by the standard (there is a configurable encoding step inside the wostream
+type).
+
+The program above fails to compile with g++ v3.4.4 producing the error:
+
+test-wchar.cpp: In function `int main()':
+test-wchar.cpp:6: error: `wstring' is not a member of `std'
+test-wchar.cpp:6: error: expected `;' before "s"
+
+Apparently this version of the compiler does not support the wide string
+type. The program also fails to compile with Open Watcom v1.7a producing
+the error:
+
+test-wchar.cpp(12): Error! E029: col(10) symbol 'wcout' has not been declared
+
+This is because the Open Watcom IOStream library is old fashion and does
+not yet implement various features required by the standard, such as wide
+character support. Note that Open Watcom does support the wstring type.
+
+In the source of C++ programs you can use so called "universal character
+names" to include Unicode characters in variable names and the like. These
+names have the form \uXXXX where XXXX is the four (hex) digit value of the
+Unicode code point. There is also an extended version, \uXXXXXXXX, to
+handle characters outside the BMP. Here is the declaration of a variable
+named Québec:
+
+int Qu\u00E9bec;
+
+Clearly writing variables in this way using an ASCII text editor would be
+unspeakably tedious. The assumption is that you will be using a specialized
+C++ editor, such as might be included with a C++ IDE, that displays
+universal character names as the characters they stand for while still
+reading and writing source files containing the \uXXXX form. This approach
+allows you to include such characters in your source code while still using
+a very limited character (and widely supported) set in the source files
+themselves.
+
+I tried compiling the following program with a couple of different C++
+compilers:
+
+#include <iostream>
+
+int main()
+{
+  int Qu\u00E9bec = 1;
+  std::cout << "Hello: " << Qu\u00E9bec << std::endl;
+  return 0;
+}
+
+Microsoft Visual C++ v9 handles this correctly. There are no errors and the
+resulting program outputs "Hello: 1" as expected. g++ v3.4.4 produces the
+following error:
+
+test-uchar.cpp: In function `int main()':
+test-uchar.cpp:6: error: stray '\' in program
+test-uchar.cpp:6: error: `Qu' does not name a type
+
+Open Watcom v1.7a produces the following error:
+
+test-uchar.cpp(6): Warning! W894: col(9) unexpected character in source file
+test-uchar.cpp(6): Error! E006: col(9) syntax error; probable cause: missing ';'
+
+These experiments show that the latest version of Visual C++ does a much
+better job with character sets than either g++ v3.4.4 or Open Watcom v1.7a.
+It might be interesting to try the latest version of g++.

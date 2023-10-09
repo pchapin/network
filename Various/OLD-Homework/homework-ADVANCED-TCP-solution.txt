@@ -1,0 +1,138 @@
+
+CIS-3152: Worksheet #3 Answers.
+(C) Copyright 2009 by Peter C. Chapin
+=====================================
+
+1.
+
+> What is the "Silly Window Syndrome" and why is it bad? See RFC-813.
+
+Silly Window Syndrome occurs when the receiver sends an acknowledgement that contains a small
+window size and the sender responds by right away sending a correspondingly small segment. This
+can happen if the receiver process is consuming data in small chunks with a nearly full buffer
+or if the sending process believes that nearly a full window size is in transit. In either case
+only small segments get sent despite the large buffers that might be present on either end of
+the connection, and network throughput is greatly impaired.
+
+2.
+
+> What is "Nagle's Algorithm" and what problem is it trying to solve? See RFC-896. Look for the
+> section titled "The small-packet problem". Note that in RFC-896, Nagle often uses the word
+> "packet" when "segment" would have been more appropriate. Note also that RFC-896 was written
+> in 1984 when the Internet was starting to evolve to a more general purpose network. Some of
+> Nagle's discussion about why the original network didn't have as many problems is interesting
+> but of historical significance only.
+
+The problem Nagle's Algorithm is trying to solve pertains to excessive network congestion due to
+the many small segments generated in interactive connections. When, for example, a user is
+typing text into a terminal session normally every character typed is sent in its own segment.
+This creates very high overhead and on a busy network (with many such sessions going) generates
+excessive congestion and poor overall performance.
+
+Nagle's Algorithm is very simple: Don't send a segment (other than the first segment) until an
+acknowledgement has been received. When an acknowledgement is received, all the data in the
+sender's outgoing buffer becomes acceptable to send. The outgoing buffer can accumulate data
+(several characters, for example), while TCP waits for the acknowledgement. That accumulated
+data is then sent all at once. This greately reduces the number of segments on the network.
+
+Note that bulk data transfers are not negatively impacted by this algorithm. Although the sender
+waits after sending the first segment until the first acknowledgement comes back, after that the
+entire send buffer can be transmitted, filling the TCP window in the usual way. The resulting
+steady stream of acknowledgements will stimulate a steady stream of send operations and TCP will
+run as it usually does.
+
+3.
+
+> What is the difference between the "slow start" and "congestion avoidance" algorithms? You can
+> just give a qualitative description. See RFC-2581, section 3.
+
+Slow start is used to "probe" the network to find its capacity and to avoid sending an
+inappropriate burst of data on a network in an unknown state. It works by defining a "congestion
+window" and then increasing that window (by SMSS bytes) for each acknowledgement received that
+acknowledges new data. Slow start ends when the congestion window size equals or exceeds the
+"slow start threshold" or when congestion is detected. Initially the slow start threshold could
+be very large; using the size of the receiver window is suggested by the RFC.
+
+The RFC allows for the congestion window to be initially as large as 2*SMSS bytes). In this case
+that is 2*1460 = 2920 bytes. Below I will assume the ssthresh value and receiver window are both
+infinite.
+
+1. cwnd = 2920, send 2 segments at 1460 bytes each.
+2. Receive ACK for first segment, increase cwnd to 4380 bytes.
+   Move window to right exposing 2920 bytes of data.
+   Send 2 segments at 1460 bytes each. (3 segments outstanding)
+3. Receive ACK for second segment, increase cwnd to 5840 bytes.
+   Move window to right exposing 2920 bytes of data.
+   Send 2 segments at 1460 bytes each. (4 segments outstanding)
+4. Receive ACK for third segment, increase cwnd to 7300 bytes.
+   Move window to right exposing 2920 bytes of data.
+   Send 2 segments at 1460 bytes each. (5 segments outstanding)
+
+Notice that as time goes on the number of outstanding segments increase. Thus slow start will
+start modestly but soon, without any other restraining factor, begin to fill the network between
+the sender and receiver with segments in transit. Eventually the network will be a maximum
+capacity with ACKs coming back as fast as segments are sent.
+
+Note that in reality the ACKs for the first two segments are likely to come back one right after
+another. Thus slow start will initially increase cwnd by two segment's worth *and* move the
+window to the right by two segment's worth, exposing 4 segments to send. When the ACKs for all
+four of those segments come back, slow start will increase cwnd by four segments and move the
+window to the right four segments, exposing 8 new segments to send. This behavior illustrates
+the exponential behavior of "slow" start. However, this only occurs while the network is
+unsaturated (the normal case, really).
+
+The congestion avoidance algorithm is used once the congestion window goes above ssthresh. In
+that case the size of the congestion window is increased by SMSS bytes for each round trip. This
+is different than slow start because in the case of slow start there might be (and in general
+would be) several ACKs for each round trip because of the potentially large number of segments
+in transit at any one time. Congestion avoidance is used when TCP is already pushing the network
+hard and wants to gradually push the network harder to see if any previous congestion problems
+have abated.
+
+4.
+
+> Suppose a sequence of segments are sent with the following round trip times: 10ms, 12ms, 9ms,
+> 21ms, 10ms. Using the two methods described in class, what would TCP's estimate of the round
+> trip time be after the last segment? What time-out interval would it use at that point? Use
+> the first measured round trip time for the initial value of the round trip estimate. Use zero
+> for the initial estimate of the deviation.
+
+Old Method
+==========
+
+R <- A*R + (1 - A)*M
+  R: Current estimate of round trip time.
+  M: Last measured time.
+  A: Weighting factor (0.9)
+
+R_old   M       R_new
+---------------------
+10ms    10ms    10ms
+10ms    12ms    10.2ms
+10.2ms   9ms    10.1ms
+10.1ms  21ms    11.2ms
+11.2ms  10ms    11.1ms
+
+Thus the final estimate of round-time time is 11.1ms. Note that this computation used the
+initial measurement as the initial estimate.
+
+The timeout interval is 2*R. At the end of the sequence above this comes to 22.2ms.
+
+New Method
+==========
+
+E <- M - R
+R <- R + g*E          (with g = 1/8)
+D <- D + h*(|E| - D)  (with h = 1/4)
+
+R_old   D_old   M       E       R_new   D_new
+---------------------------------------------
+10ms    0ms     10ms    0ms     10ms    0ms
+10ms    0ms     12ms    2ms     10.2ms  0.5ms
+10.2ms  0.5ms    9ms    -1.2ms  10ms    0.7ms
+10ms    0.7ms   21ms    11ms    11.4ms  3.3ms
+11.4ms  3.3ms   10ms    -1.4ms  11.2ms  2.8ms
+
+Thus the final estimate of round-trip time is 11.2ms.
+
+The timeout interval is R + 4*D = 22.4ms.

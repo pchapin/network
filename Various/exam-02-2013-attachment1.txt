@@ -1,0 +1,123 @@
+Return-Path: <pchapin@sover.net>
+X-Original-To: pchapin@ecet.vtc.edu
+Delivered-To: pchapin@ecet.vtc.edu
+Received: from morning.ecet.vtc.edu [155.42.13.22]
+	by whirlwind with POP3 (fetchmail-6.3.1)
+	for <Peter@localhost> (single-drop); Mon, 02 Apr 2007 20:11:52 -0400 (EDT)
+Received: from mailgate5.sover.net (mailgate5.sover.net [209.198.87.110])
+	by morning.ecet.vtc.edu (Postfix) with ESMTP id 6B27310C09
+	for <pchapin@ecet.vtc.edu>; Mon,  2 Apr 2007 20:11:25 -0400 (EDT)
+Received: from WHIRLWIND (dialup1864.wnskvtao.sover.net [216.114.167.87])
+	by mailgate5.sover.net (8.12.9/8.12.9) with SMTP id l330BB9G014834
+	for <pchapin@ecet.vtc.edu>; Mon, 2 Apr 2007 20:11:18 -0400 (EDT)
+Received: by WHIRLWIND (sSMTP sendmail emulation); Mon, 2 Apr 2007 20:11:10 -0400
+Date: Mon, 2 Apr 2007 20:10:23 -0400
+From: "Peter C. Chapin" <pchapin@sover.net>
+To: pchapin@ecet.vtc.edu
+Subject: An irrelevant message.
+Message-ID: <Pine.CYG.4.58.0704022008280.3564@whirlwind>
+MIME-Version: 1.0
+Content-Type: MULTIPART/MIXED; BOUNDARY="-559023410-177425948-1175559023=:3564"
+X-UIDL: 4lN!!R>L"!/8-#!~"b"!
+Status: R
+X-Status: 
+X-Keywords:                  
+
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+  Send mail to mime@docserver.cac.washington.edu for more info.
+
+---559023410-177425948-1175559023=:3564
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+This message is irrelevant. It is completely devoid of meaning. Sending
+this message over the internet is an offense to the IETF gods. My mailbox
+will now fill with spam.
+
+Peter
+
+---559023410-177425948-1175559023=:3564
+Content-Type: TEXT/PLAIN; charset=US-ASCII; name="afile.txt"
+Content-Transfer-Encoding: BASE64
+Content-ID: <Pine.CYG.4.58.0704022010230.3564@whirlwind>
+Content-Description: 
+Content-Disposition: attachment; filename="afile.txt"
+
+VGhpcyBpcyBhIHNtYWxsIGZpbGUuDQ0KSXQgZG9lcyBub3QgY29udGFpbiBh
+bnl0aGluZyBpbXBvcnRhbnQuDQ0K
+
+---559023410-177425948-1175559023=:3564
+Content-Type: IMAGE/JPEG; name="pcc.jpg"
+Content-Transfer-Encoding: BASE64
+Content-ID: <Pine.CYG.4.58.0704022010231.3564@whirlwind>
+Content-Description: 
+Content-Disposition: attachment; filename="pcc.jpg"
+
+/9j/4AAQSkZJRgABAQAAAQABAAD//gDNVGhpcyBmaWxlIHdhcyBjcmVhdGVk
+IGJ5DQ1HcmFwaGljIFdvcmtzaG9wmSBQcm9mZXNzaW9uYWwgMy4wYQ0NZnJv
+bSBBbGNoZW15IE1pbmR3b3Jrcy4NaHR0cDovL3d3dy5taW5kd29ya3Nob3Au
+Y29tDQ1UaGlzIGltYWdlIG1heSBoYXZlIGJlZW4gY3JlYXRlZCBieQ1hIHBh
+cnR5IG90aGVyIHRoYW4gQWxjaGVteSBNaW5kd29ya3MuDQ1Vc2Ugbm8gaG9v
+a3P/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4n
+ICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwh
+MjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIy
+MjIyMjL/wAARCABqAHEDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAA
+AAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEG
+E1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6
+Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWW
+l5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl
+5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcI
+CQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEI
+FEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElK
+U1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOk
+paanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP0
+9fb3+Pn6/9oADAMBAAIRAxEAPwDQ3xk9BmmMFZgzNyDmoVB3emRXH6/qup2+
+si0glMabQRjvmqSubHa9Tk0h5POK4+HxDqVhtF0gnTue9b9hrVnqSM0MmHA5
+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
+Cq9x1qhDML/eFFNopXC5/9k=
+
+---559023410-177425948-1175559023=:3564--
+

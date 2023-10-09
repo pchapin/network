@@ -1,0 +1,154 @@
+
+CIS-3152: Homework #2 Solution.
+(C) Copyright 2015 by Peter C. Chapin
+=====================================
+
+2.
+
+> There is a theoretical problem with the echo client/server pair presented in class. If the
+> client tries to send an extremely long line the two programs will deadlock (both block waiting
+> for each other). This can occur because the write on the client will not return until it has
+> queued all the desired data for sending. As the server echos the data back to the client, the
+> various network buffers will fill and, if there is too much data, write on the client will
+> never complete.
+>
+> The purpose of this assignment is to demonstrate this effect. However, you don't have to solve
+> the problem, although I encourage you to think about it. Modify the echo client so that
+> instead of sending lines of text from the user it fills a large array with uninteresting data
+> (for example, the letter 'x'). Make the array, for example, one megabyte in size. Try to write
+> the entire array in one call to write. When you run your client against the server it should
+> hang.
+
+I started the modifications on the client by creating a large global array as follows:
+
+    #define LARGE_BUFFER_SIZE 1000000
+    char large_buffer[LARGE_BUFFER_SIZE];
+
+I made the array global to eliminate possible problems associated with creating large arrays on
+the stack (local variables are on the stack). Just before the main loop of the client I added
+
+    // Prepare the large buffer.
+    memset( large_buffer, 'x', LARGE_BUFFER_SIZE - 1);
+    large_buffer[LARGE_BUFFER_SIZE - 1] = '\n';
+
+Notice that this '\n' terminates the array. Finally I changed the while loop to be as follows
+
+    printf("> ");
+    while (fgets(buffer, BUFFER_SIZE, stdin) != NULL) {
+        //write(socket_handle, buffer, strlen(buffer));
+        write(socket_handle, large_buffer, LARGE_BUFFER_SIZE);
+        while ((count = read(socket_handle, buffer, BUFFER_SIZE - 1)) > 0) {
+            buffer[count] = '\0';
+            fputs(buffer, stdout);
+
+            // If this line contains a '\n' character, we are done for now.
+            if (strchr(buffer, '\n') != NULL) break;
+        }
+
+        // Did the loop end above due to some error?
+        if (count < 0) {
+            perror("Problem reading socket");
+        }
+        printf("> ");
+    }
+
+The loop still accepts lines from the user but instead of sending those lines (they are ignored)
+it sends the large_buffer instead. The program then goes into the usual loop where it receives
+the line echoed from the server in BUFFER_SIZE chunks up until it receives a '\n'. Since the
+large buffer is still '\n' terminated this reading process should remain well behaved; it would
+attempt to read and display a very long line of 'x' characters.
+
+These changes cause the program to print a prompt ("> ") and then wait for user input before
+trying to send the large buffer. If successful the program ultimately prints another prompt,
+etc.
+
+I made no changes to the server at this stage.
+
+Unfortunately this program did not illustrate any deadlock. The problem is that on Ubuntu Linux
+the socket buffers are allowed to expand to very large sizes dynamically. There is no problem
+holding the entire 1 MiB of data in the client's receive socket buffer alone. This can be seen
+by looking at the configuration information in the /proc file system:
+
+    student@hackbox:~$ cat /proc/sys/net/ipv4/tcp_rmem
+    4096    87380    6291456
+
+Here the minimum, default, and maximum sizes of the socket receive buffers are shown. Notice
+that the maximum size is over 6 MiB! Similarly the size of the socket transmit buffers can be
+found as
+
+    student@hackbox:~$ cat /proc/sys/net/ipv4/tcp_wmem
+    4096    16384    4194304
+
+Here a maximum size of "only" about 4 MiB is shown. Thus all four buffers together (RX and TX on
+both client and server side) can grow to a combined size of about 20 MiB.
+
+To observe the deadlock I could thus use a much larger message (say, 32 MiB). However instead I
+just used setsockopt() to set the SO_RCVBUF and SO_SNDBUF socket options to control the size of
+the receive and send buffers respectively. This entailed adding code such as the following to
+both the client and server programs
+
+    int socket_buffer_size = 16384;
+    if (setsockopt(socket_handle, SOL_SOCKET, SO_RCVBUF, &socket_buffer_size, sizeof(int)) < 0) {
+        perror("Unable to set socket receive buffer size");
+        close(socket_handle);
+        return 1;
+    }
+    if (setsockopt(socket_handle, SOL_SOCKET, SO_SNDBUF, &socket_buffer_size, sizeof(int)) < 0) {
+        perror("Unable to set socket send buffer size");
+        close(socket_handle);
+        return 1;
+    }
+
+This is done after the socket is created but before connect() is called on the client and
+listen() is called on the server. This code sets the buffer sizes to only 16 KiB (all four
+socket buffers thus provide 64 KiB of buffering total) which is easily overwhelmed by the 1 MiB
+message. Apparently setting the buffer sizes explicitly prevents them from expanding on demand.
+
+3.
+
+> Convince yourself that the client is actually doing something by modifying it again so that it
+> writes the one megabyte buffer in 1024 byte pieces, printing a message just after writing each
+> piece. Do not read any data from the server while doing this! How far does the client get
+> before it hangs? This is an approximate measure of the size of all network buffers involved in
+> the communication.
+
+I changed the main while loop in the client as follows
+
+    write_count = 0;
+    printf("> ");
+    while (fgets(buffer, BUFFER_SIZE, stdin) != NULL) {
+        //write(socket_handle, buffer, strlen(buffer));
+        while (write_count < LARGE_BUFFER_SIZE) {
+            write_count += write(socket_handle, &large_buffer[write_count], 1024);
+            printf("Wrote: %d bytes\n", write_count);
+        }
+        printf("\n");
+        while ((count = read(socket_handle, buffer, BUFFER_SIZE - 1)) > 0) {
+            buffer[count] = '\0';
+            fputs(buffer, stdout);
+
+            // If this line contains a '\n' character, we are done for now.
+            if (strchr(buffer, '\n') != NULL) break;
+        }
+
+        // Did the loop end above due to some error?
+        if (count < 0) {
+            perror("Problem reading socket");
+        }
+        printf("> ");
+    }
+
+The significant change is that write() is now called in a loop that only attempts to write 1024
+bytes at a time. Running this program shows that about 90,000 bytes are written total before the
+client hangs. The exact number changes somewhat from run to run. Notice that this value is
+greater than the 64 KiB mentioned before. I can't explain the precise details of what is
+happening except to say that the sizes sent to getsockopt() are probably rounded up to some
+other more "convenient" size internally by the kernel. Also there is additional memory where
+data can be buffered (such as the array 'buffer' in the server); the amount of that memory used
+will depend on the details of how the stream is segmented, etc, and could reasonably vary from
+run to run.
+
+Note that the code above is not very robust. If write() fails and returns -1 the behavior will
+not be as intended. Also if the loop did manage to send the entire large buffer there might be a
+problem at the end (the number 1024 might not be appropriate in general). For the purposes of
+this question these details are not important.

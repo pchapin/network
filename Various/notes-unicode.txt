@@ -1,0 +1,52 @@
+
+Unicode Notes
+=============
+
+UTF-32
+------
+
+Each code point is represented by itself in 32 bits. This works because 32 bits is enough to
+handle the entire Unicode code space (from U+0000 to U+10FFFF). Notice that every Unicode
+character has an official name.
+
+00 00 00 58  "LATIN CAPITAL LETTER X" U+0058
+00 00 03 B1  "GREEK SMALL LETTER ALPHA" U+03B1
+
+Fixed length encoding (every character encodes using the same number of bytes)
+  - The length of a string in bytes is simply related to the length in characters.
+  - Random access of characters is easy (constant time).
+
+UTF-16
+------
+
+Each code point is represented by a 16 bit code unit.
+
+All BMP characters are represented by themselves
+Technically, UTF-16 is a variable lenght encoding
+  - The length of a string in bytes is not directly related to the length in character.
+  - Random access of characters isn't easy (linear time).
+
+UTF-16
+UTF-16BE ("big endian")
+UTF-16LE ("little endian")
+
+UTF-8
+-----
+
+The ASCII characters are represented as themselves. An ASCII file is already a UTF-8 encoded
+Unicode file.
+
+Combining Characters
+--------------------
+
+Montréal
+Montréal
+
+ M o n t r e [ ] a l
+              ^
+              |
+              +--- Combining character.
+
+Suppose:
+  10 base characters
+  10 marks (as combining characters)

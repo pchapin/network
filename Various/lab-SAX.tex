@@ -1,0 +1,84 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILE         : lab08.tex
+% AUTHOR       : (C) Copyright 2007 by Peter C. Chapin
+% LAST REVISED : 2007-03-17
+% SUBJECT      : SAX
+%
+% In this lab the students will build a small application using SAX to
+% process an XML document.
+%
+%       Peter C. Chapin
+%       Electrical and Computer Engineering Technology
+%       Vermont Technical College
+%       Randolph Center, VT. 05061
+%       pchapin@ecet.vtc.edu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ++++++++++++++++++++++++++++++++
+% Preamble and global declarations
+% ++++++++++++++++++++++++++++++++
+\documentclass[twocolumn]{article}
+% \pagestyle{headings}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+% +++++++++++++++++++
+% The document itself
+% +++++++++++++++++++
+\begin{document}
+
+% ----------------------
+% Title page information
+% ----------------------
+\title{CIS--3152 Lab \#8\\SAX}
+\author{\copyright\ Copyright 2007 by Peter C. Chapin}
+\date{Last Revised: March 17, 2007}
+\maketitle
+
+\section*{Introduction}
+
+In this lab you will write a short program that uses an off-the-shelf XML parser to process an
+XML document. In many cases one can write an XSLT style sheet that processes an XML document to
+produce results that are also in XML form. Normally writing an XSLT style sheet is easier than
+writing a specialized program from scratch. However, there are times when a specialized program
+is necessary. For example, if the output you desire is not in XML (tree-like) form, XSLT isn't
+such a good choice. Also general XSLT processors might be too slow in some cases. In this lab
+you will write a custom program to process XEmail documents.
+
+\section{The Problem}
+
+Consider the XEmail markup language that you worked on in the last lab. Write a program that
+produces a summary listing of all unread email messages in a document. The summary listing
+should include the From address on the message and the message's subject line. Your program
+should also print a count of the number of such messages. Note that messages that have been read
+have a status attribute \emph{that contains} ``R.''
+
+\section{Implementation Notes}
+
+In the XEmail project you will find a sample SAX parsing application written in C++ that uses
+the Xerces parser. The sample application contains all the necessary boiler plate to do a
+validating parse on an XML file. The sample also contains place holder functions for handling
+significant SAX events. The provided Makefile builds the sample. Currently the sample just
+outputs a listing of the elements encountered during parsing.
+
+To modify the sample application so that it meets the needs of this lab, do the following:
+\begin{enumerate}
+
+\item Change \texttt{startElement} so that it sets a flag when it sees an \texttt{email:message}
+  element without the R status. Change \texttt{endElement} so that it clears this flag when the
+  end of the \texttt{email:message} element is encountered.
+
+\item You need to detect `From' addresses and `Subject' lines only when the flag mentioned above
+  is set (that is, only when you are inside an appropriate message). Because there are multiple
+  places where \texttt{address} elements might be encountered, you may need to use additional
+  flags to distinguish `From' addresses from, say, `To' addresses. A more elegant way is to
+  maintain a stack of the elements that are currently open and then do a kind of string matching
+  against the top of the stack. Such an approach might be overkill for this short problem,
+  however.
+\end{enumerate}
+
+\section{Report}
+
+Turn in a commented listing of your program. There is no formal report.
+
+\end{document}

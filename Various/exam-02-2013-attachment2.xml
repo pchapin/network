@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<exam
+    xmlns="http://www.vtc.edu/XML/examsample"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.vtc.edu/XML/examsample examsample.xsd">
+
+    <summary>
+      <course>CIS-3152</course>
+      <instructor>Peter C. Chapin</instructor>
+      <dates-given>
+        <date>2012-04-01</date>
+        <date>2013-04-23</date>
+      </dates-given>
+      <material>This exam covers mail protocols, and XML.</material>
+    </summary>
+
+    <question difficulty="3" estimated-time="PT10M">
+      <body>What is a waggle fish?</body>
+      <answer>A creature that travels between computers on network cables and that
+        causes various kinds of software failures.</answer>
+      <answer>A torture device used by college professors to torment students.</answer>
+      <answer>Something consumed by first year students in computer related fields as an
+        initiation rite.</answer>
+    </question>
+    
+</exam>

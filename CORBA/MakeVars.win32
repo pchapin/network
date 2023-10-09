@@ -1,0 +1,195 @@
+#
+#  MICO --- an Open Source CORBA implementation
+#  Copyright (c) 1997-2001 by The Mico Team
+#
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Library General Public
+#  License as published by the Free Software Foundation; either
+#  version 2 of the License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Library General Public License for more details.
+#
+#  You should have received a copy of the GNU Library General Public
+#  License along with this library; if not, write to the Free
+#  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+#  For more information, visit the MICO Home Page at
+#  http://www.mico.org/
+#
+
+#
+# Configuration
+#
+
+# Current Version(clear if you want old behaviour)
+VERSION		= 2311
+
+# define if you want a release build(not tested much)
+RELEASE_BUILD	= 1
+
+#this contains MICO added paths
+MPATH           = 
+
+# define this if you want to use Precompiled headers.
+# You better have enough space on device because you need 30Mb more
+#FAST_PCH = 1
+
+
+# SSL stuff, provided by Alfonso Urdaneta <aurdaneta@integratedvisions.com>
+# uncomment the following section and set SSL_PATH appropriately
+# Adapted by Sorin Mustaca <msorin@objectsecurity.com>
+
+#HAVE_SSL       = 1
+
+!ifdef HAVE_SSL
+SSL_PATH       = F:\corba\openssl\openssl-0.9.6g
+SSL_FLAGS      = /W3 /G5 /Gs0 /GF /Gy /nologo \
+               -DMONOLITH -DWIN32 -DWIN32_LEAN_AND_MEAN -DL_ENDIAN \
+               /DHAVE_SSL /DHAVE_OPENSSL_SSL_H -I$(SSL_PATH)\inc32 \
+               -I$(SSL_PATH)\tmp32dll
+SSL_LIBS       = /LIBPATH:$(SSL_PATH)\out32dll ssleay32.lib libeay32.lib RSAglue.lib
+MPATH = $(SSL_PATH)\out32dll
+
+!endif
+
+
+# CSIv2 stuff
+#
+# NOTE: MICO CSIv2 implementation depends on MICO SSL support, so
+# please don't enable CSIv2 build if you don't have properly set SSL
+# build variables above, otherwise your build will fail.
+#
+# uncomment the following section to enable CSIv2 MICO build
+
+!ifdef HAVE_SSL
+#USE_CSIV2 = 1
+
+!if defined(USE_CSIV2)
+CSIV2_FLAGS = /DUSE_CSIV2
+!endif
+!endif
+
+# PTHREADS adaptation by Sorin Mustaca <msorin@objectsecurity.com>
+#
+# MICO is able to be compiled and run in multi-threaded environment on
+# top of Win32 OS by using posix threads "emulation" layer which is
+# provided by POSIX Threads for Win32 project. For more information
+# about this project and for sources of pthreads library please look at
+# http://sources.redhat.com/pthreads-win32/ 
+#
+# In order to compile MICO with pthreads first compile the library you
+# want to use: PthreadsVC(no exception), PthreadsVCE(C++ EH) and/or
+# PthreadsVSE(MSVC Structured EH). Please read 'README' file from
+# pthreads package before doing any modification here. If you have
+# pthreads library compiled and ready, you have to uncomment line
+# HAVE_THREADS=1 and correctly define and uncomment line with
+# PTHREADS_PATH. Finally you have to choose from three variations of
+# configuration provided below.
+#
+#HAVE_THREADS = 1
+
+!ifdef HAVE_THREADS
+PTHREADS_PATH = F:\corba\pthreads-snap-2002-11-04
+
+# Use these settings
+#PTHREADS_LIB = $(PTHREADS_PATH)\pthreadVSE.lib
+#PTHREADS_EXC = __CLEANUP_SEH
+
+# Or these
+PTHREADS_LIB = $(PTHREADS_PATH)\pthreadVC.lib
+PTHREADS_EXC= __CLEANUP_C
+
+# Or these
+#PTHREADS_LIB = $(PTHREADS_PATH)\pthreadVCE.lib
+#PTHREADS_EXC= __CLEANUP_CXX
+
+PTHREADS_FLAGS = /W3 /Yd /DHAVE_PTHREADS /DHAVE_THREADS /I$(PTHREADS_PATH) /DPtW32NoCatchWarn /D$(PTHREADS_EXC) /D_WIN32_WINNT=0x400
+MPATH = $(MPATH);$(PTHREADS_PATH)
+!endif
+
+#
+# uncomment following line if you want to compile MICO with MicoCCM support
+#USE_CCM = 1
+
+!ifdef USE_CCM
+CCM_FLAGS = /DUSE_CCM
+!endif
+
+#
+#End of configuration 
+#
+
+CXX             = cl.exe
+CC              = cl.exe
+LINK            = link.exe
+LD	        = $(LINK)
+JAVAC           = javac.exe
+JCUP            = java.exe java_cup.Main
+MAKE            = nmake /nologo
+
+#where the compilation is done regarding to ROOT
+#RELATIVE		=
+COPY			= copy /Y	
+
+SYSLIBS         = wsock32.lib
+AR              = lib.exe
+ARFLAGS         = /nologo
+RM          	= del /F /Q 2> nul
+LDFLAGS     	= $(LINKFLAGS)
+IDL     	= $(RELATIVE)\win32-bin\idl.exe
+MKDEPEND    	= echo 
+DELETE		= $(RM) *.obj *.exe *.def *.dmp *.dll *.lib *.exp  *.pdb *.pch *.ilk
+
+
+!ifdef RELEASE_BUILD
+CXXFLAGS        = /nologo /Ox /EHsc /GX /GR /TP /MD $(SSL_FLAGS) $(CSIV2_FLAGS) $(PTHREADS_FLAGS) $(CCM_FLAGS)
+CCFLAGS         = /nologo /GX /TC /MD $(SSL_FLAGS) $(CSIV2_FLAGS) $(PTHREADS_FLAGS) $(CCM_FLAGS)
+LINKFLAGS       = /nologo /subsystem:console /OPT:REF /incremental:no $(SSL_LIBS) $(PTHREADS_LIB)
+LINKDLLFLAGS    = /nologo /dll /incremental:no /OPT:REF $(SSL_LIBS) $(PTHREADS_LIB)
+!else
+# In Debug there are a lot of security checks: /GS,/GZ . Consult MSDN for details.
+
+# If you need faster compilation and execution times in DEBUG, just comment the var below
+#SECURITY_CHECKS	= /GS /GZ /Ge /RTCu /RTCs
+#HAVE_MEMCHECK = 1
+CXXFLAGS        = /nologo $(SECURITY_CHECKS) /EHsc /GX /GR /TP /Zi /MDd $(SSL_FLAGS) $(CSIV2_FLAGS) $(PTHREADS_FLAGS) $(CCM_FLAGS)
+CCFLAGS         = /nologo $(SECURITY_CHECKS) /GX /TC /Zi /MDd $(SSL_FLAGS) $(CSIV2_FLAGS) $(PTHREADS_FLAGS) $(CCM_FLAGS)
+LINKFLAGS       = /nologo /debug /subsystem:console /incremental:no $(SSL_LIBS) $(PTHREADS_LIB)
+LINKDLLFLAGS    = /nologo /debug /dll /incremental:no $(SSL_LIBS) $(PTHREADS_LIB)
+!endif
+# uncomment if you have tcl installed and declare path
+# HAVE_TCL	= 1
+# TCL_PATH	= d:\tcl
+# Tcl support is not usable yet
+
+.SUFFIXES:
+.SUFFIXES:	.c .cc .cpp .obj .rc .RES .idl .class .java .cup
+
+.cc.obj:
+	$(CXX) /c $(CXXFLAGS) $< /Fo$*.obj
+
+.cpp.obj:
+	$(CXX) /c $(CXXFLAGS) $< /Fo$*.obj
+
+.cxx.obj:
+	$(CXX) /c $(CXXFLAGS) $< /Fo$*.obj
+
+
+.rc.RES:
+	$(RC) $<
+
+.idl.cpp:
+    echo compiling IDL
+    $(IDL) --c++-suffix=cpp $<
+
+.c.obj:
+	$(CC) /c $(CCFLAGS) $< /Fo$*.obj
+
+.java.class:
+	$(JAVAC) $<
+
+.cup.java:
+	$(JCUP) < $<

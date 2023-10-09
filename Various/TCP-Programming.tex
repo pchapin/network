@@ -1,0 +1,333 @@
+% ===========================================================================
+% FILE         : TCP.tex
+% LAST REVISED : 2007-01-01
+% SUBJECT      : TCP client/server programming using sockets.
+% AUTHOR       : Peter C. Chapin <pchapin@ecet.vtc.edu>
+%
+% This file contains a general overview of client server programming using
+% sockets. Much has been left out, but this should get the student going
+% with the basic ideas.
+%
+% ===========================================================================
+
+% ++++++++++++++++++++++++++++++++
+% Preamble and global declarations
+% ++++++++++++++++++++++++++++++++
+\documentclass{article}
+% \pagestyle{headings}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+\newcommand{\filename}[1]{\texttt{#1}}
+\newcommand{\newterm}[1]{\textit{#1}}
+
+% +++++++++++++++++++
+% The document itself
+% +++++++++++++++++++
+\begin{document}
+
+% ----------------------
+% Title page information
+% ----------------------
+\title{Client/Server Programming with Sockets}
+\author{\copyright\ 2007 by Peter C. Chapin}
+\date{January 1, 2007}
+\maketitle
+
+\section*{Introduction}
+
+The POSIX sockets API is the defacto standard for TCP/IP programming on the Internet. Even non-Unix systems typically support a library with an API that is very much like the sockets API (for example, WINSOCK under Windows). Keep in mind that socket programming is a relatively low level technique. Many libraries and programming languages are built on top of the socket level precisely to make dealing with the network easier for the application programmer. However, experience with the sockets API will give you insight into how these other systems work and an appreciation of the advantages and limitations of those systems.
+
+\section{TCP/IP Programming Under Unix}
+
+When you build your program, the linker will need to scan the sockets library to resolve references to the sockets functions. This is typically done automatically but in some cases you may need to specify the sockets library explicitly on the compiler's command line. If you need to do this use the \texttt{-l} command line option to specify the library.
+
+\begin{verbatim}
+$ cc program.c -lsocket
+\end{verbatim}
+
+You will also need to \#include several header files to declare various structures, macros, and functions. The following headers are what you'll need for basic network support.
+
+\begin{verbatim}
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <unistd.h>
+\end{verbatim}
+
+Be sure to include sys/types.h first. It contains typedefs and other definitions used by the other header files. You should get in the habit of reviewing the manual page for each network function that you use. Among other things the manual page shows you which headers are needed for any particular function.
+
+In the subsections that follow I will describe the steps required to open and use a TCP/IP connection. The particulars are different depending on if you are writing the server or the client. This is because the server and client are fundamentally asymmetrical. The server listens to the network passively for incoming connections while the client actively reaches out to form a connection. This asymmetry is part of all forms of communication. Consider for example the phone system: the ``client'' dials the phone while the ``server'' waits for the phone to ring.
+
+\subsection{Client Connections}
+
+The client first needs to figure out the IP address of the server and open a connection using that address and the ``well known port number'' associated with the service it wants.
+
+\subsubsection{Look up the service}
+
+The first step is to look up in \filename{/etc/services} the service you want to use. This is how you will learn the port number of the desired service. This approach is more general than simply hard-coding the port number into your program although often the client will want to allow the user to specify an overriding port number to handle cases when a service is on a non-standard port.
+
+To look up a service, you must first declare an object of type \texttt{struct servent *}. Then you must call \texttt{getservbyname()} to fetch information about the desired service.
+
+\begin{verbatim}
+struct servent *service_info;
+
+service_info = getservbyname("service_name", "tcp");
+if (service_info == NULL) {
+  // Service unknown.
+}
+\end{verbatim}
+
+Where \texttt{service\_name} is the official name of the service as it appears in the first column of \filename{/etc/services}. The members of interest in the \texttt{servent} structure are
+
+\begin{tabular}{|l|l|l|} \hline
+Member           & Type            & Meaning      \\ \hline \hline
+\texttt{s\_name} & \texttt{char *} & Protocol name\\ \hline
+\texttt{s\_port} & \texttt{int}    & Port number  \\ \hline
+\end{tabular}
+
+The port number is returned in network byte order\footnote{The order in which bytes are sent on the network, specifically: most significant byte first.} which may or may not be the natural byte order used by the CPU. If you wish to print out the port number, you will need to use the function \texttt{ntohs()} to convert it. Using \texttt{ntohs()} makes your program more portable. On systems where no byte reordering is needed, \texttt{ntohs()} has no effect. In any case, you don't need to worry about byte ordering issues when you pass the port number to the other network functions as they all expect the same byte ordering that is returned from \texttt{getservbyname()}.
+
+\subsubsection{Look up the server}
+
+Next you should look up the IP address of the server. To look up a host, you must first declare an object of type \texttt{struct hostent *}. Then you must call \texttt{gethostbyname()} to fetch information about the desired host. The function \texttt{gethostbyname()} queries the domain name system (in most cases) or looks up host information in \filename{/etc/hosts} in cases where that is appropriate.
+
+\begin{verbatim}
+struct hostent *host_info;
+
+host_info = gethostbyname("morning.ecet.vtc.edu");
+if (host_info == NULL) {
+  // Error looking up host.
+}
+\end{verbatim}
+
+The members of interest in the \texttt{hostent} structure are
+
+\begin{tabular}{|l|l|l|} \hline
+Member                 & Type             & Meaning                        \\ \hline \hline
+\texttt{h\_name}       & \texttt{char *}  & Host name                      \\ \hline
+\texttt{h\_length}     & \texttt{int}     & Number of bytes in host address\\ \hline
+\texttt{h\_addrtype}   & \texttt{int}     & Address type                   \\ \hline
+\texttt{h\_addr\_list} & \texttt{char **} & List of host addresses         \\ \hline
+\end{tabular}
+
+The \texttt{h\_length} member specifies how long the hosts address are. IPv4 addresses are always 32 bits. However, since these functions try to be general\footnote{The sockets API can be used with a variety of network protocols, not just IPv4.} \texttt{gethostbyname()} returns an appropriate length that you can use.
+
+The \texttt{h\_addrtype} member is only important if there are several different kinds of networks on the machine. You will need to use it later, but you don't need to worry about printing it out.
+
+The \texttt{h\_addr\_list} points at a NULL terminated list of pointers to addresses for a host. It is possible for a host to have multiple addresses. This pointer points at a \emph{non-null terminated array of raw bytes} composing the address. The bytes stored in this array are in network byte order and, again, may or may not be in the right byte order for the CPU. If you want to display this address you must use the \texttt{inet\_ntop()} function. Here you should read ``ntop'' as ``network to presentation'' since the function converts a binary network address into presentational form. The \texttt{inet\_ntop()} function returns the formatted address in the provided buffer.
+
+\begin{verbatim}
+char buffer[BUFFER_SIZE];
+
+inet_ntop(AF_INET, host_info->h_addr_list[0], buffer, BUFFER_SIZE);
+\end{verbatim}
+
+As with port numbers, you don't need to worry about byte ordering issues when you pass the IP address to the other network functions.
+
+You should check to be sure \texttt{gethostbyname()} returns without error. It will return a NULL pointer if it fails and store a value into the global integer \texttt{h\_errno} describing the error.
+
+The possible values of \texttt{h\_errno} are
+
+\begin{tabular}{|l|l|} \hline
+Value              &  Meaning                                \\ \hline \hline
+HOST\_NOT\_FOUND   &  No such host is known.                        \\ \hline
+TRY\_AGAIN         &  No response from remote name server.          \\ \hline
+NO\_RECOVERY       &  Some unexpected name server failure occured.  \\ \hline
+NO\_DATA           &  Name exists, but there is no IP address.      \\ \hline
+\end{tabular}
+
+\subsubsection{Establishing a connection}
+
+Now that you have the port number and the IP address of the server host, you are ready to establish a TCP connection to that host. This is done by first creating a TCP socket and then connecting that socket to the server.
+
+You must first declare an object of type \texttt{struct sockaddr\_in}. Here are the significant members of that structure.
+
+\begin{tabular}{|l|l|l|} \hline
+Member               & Type             & Meaning          \\ \hline \hline
+\texttt{sin\_addr}   & \texttt{char []} & Host IP address  \\ \hline
+\texttt{sin\_family} & \texttt{int}     & Address family   \\ \hline
+\texttt{sin\_port}   & \texttt{int}     & Desired port     \\ \hline
+\end{tabular}
+
+You must first zero out the address structure (to be sure to set any additional fields to a sensible default value) and then do a binary copy of the address bytes from the host information structure. This is easily accomplished using two helper functions. For example
+
+\begin{verbatim}
+struct sockaddr_in socket_address;
+
+  /* ... */
+
+memset(&socket_address, 0, sizeof(socket_address));
+memcpy(
+  &socket_address.sin_addr,   // Destination
+   host_info->h_addr_list[0], // Source
+   host_info->h_length        // Number of bytes
+);
+\end{verbatim}
+
+Next, fill in the \texttt{sin\_family} member from the \texttt{h\_addrtype} member of the host information structure and the \texttt{sin\_port} member from the service information structure. Now you are ready to create the socket by calling function \texttt{socket()}.
+
+\begin{verbatim}
+int socket_descriptor = socket(AF_INET, SOCK_STREAM, 0);
+\end{verbatim}
+
+The AF\_INET means that you are interested in an IPv4 socket. The SOCK\_\-STREAM means that you want a stream-oriented, reliable connection. The protocol ID of zero means that it's fine for \texttt{socket()} to select the protocol. It will alway use TCP for SOCK\_STREAM sockets. The \texttt{socket()} function returns $-1$ if it fails. Otherwise it returns an integer that can be used in the other socket functions.
+
+To actually create the connection, you must call \texttt{connect()}. The \texttt{connect()} function takes a socket descriptor as returned from \texttt{socket()}, and a pointer to a \texttt{struct sockaddr\_in} that contains the destination IP address and port.
+
+\begin{verbatim}
+connect(
+  socket_descriptor, &socket_address, sizeof(socket_address)
+);
+\end{verbatim}
+
+Unfortunately the call above will produce a warning message in most cases. This is because \texttt{connect()} is declared as taking a pointer to a \texttt{struct sockaddr} and not a \texttt{struct sockaddr\_in}. This was done to make \texttt{connect()} more generic. If your system supports multiple network protocols, the sockets API can be used for all of them, even if the address formats (and hence the address structures) are quite different from one protocol to the next. As a result you should cast \texttt{\&socket\_address} to type \texttt{(struct sockaddr *)} in the call to \texttt{connect()}.
+
+The \texttt{connect()} function returns $-1$ if it fails.
+
+\subsubsection{Reading and Writing}
+
+To read data from the TCP socket or write data to it, you can use the normal Unix system calls, \texttt{read()} and \texttt{write()}. The \texttt{read()} function takes a descriptor, a pointer to a buffer, and the number of bytes you wish to read. For example, the following code attempts to read 128 bytes from the connection.
+
+\begin{verbatim}
+char buffer[128];
+
+read(socket_descriptor, buffer, 128);
+\end{verbatim}
+
+The \texttt{read()} function will wait if there is no data available, but it won't necessarily wait for all of the data you requested. If there is some data waiting to be read, \texttt{read()} will return at once with just that data. The \texttt{read()} function returns the number of bytes it actually read or $-1$ if there is an error.
+
+The \texttt{write()} system call takes exactly the same parameters except that it writes the data already in the buffer instead of reading in new data (obviously).
+
+You may find using the low level Unix file API to be awkward. You can use the function fdopen() to create a standard FILE stream from an open file descriptor. The value returned by \texttt{fdopen()} can be used with the other standard I/O file functions in the usual way. See the manual pages for more information.
+
+When you are done using the connection you can call \texttt{close()} on the socket descriptor just as you would do for a file. The kernel will then tear down the TCP connection that has been servicing that connection in the usual way. If you converted the socket descriptor into a FILE using \texttt{fdopen()}, you should use the normal \texttt{fclose()} function instead. In addition to calling \texttt{close()} internally, \texttt{fclose()} will also release any resources allocated by the higher level file handling library.
+
+
+\subsection{Server Connections}
+
+The server works a little differently than the client. It has to create a socket and then bind that socket to the well known port address of the port it services. It must then listen to that socket and accept incoming connection requests. For each connection request, the server forks a child process to handle that request.
+
+Typically the server program is an infinite loop. At the top of the loop is a call to \texttt{accept()}. That call blocks the server process if there are no connection requests. When \texttt{accept()} returns, it returns with a new, open socket through which all communication with the client will take place. Neither the server software nor the client software need to worry about dynamically allocating sockets---that is all handled inside the socket library.
+
+\subsubsection{Look up the service}
+
+This is done exactly the same way as it is done in the client software.
+
+\subsubsection{Creating the socket}
+
+The server does not look up any host. It waits to be contacted so it is not specifically interested in any host. It does not use \texttt{gethostbyname()}. However, the server still has to create a socket.
+
+\begin{verbatim}
+struct sockaddr_in socket_address;
+int socket_descriptor;
+
+memset(&socket_address, 0, sizeof(socket_address));
+socket_address.sin_family      = AF_INET;
+socket_address.sin_addr.s_addr = htonl(INADDR_ANY);
+socket_address.sin_port        = sp->s_port;
+socket_descriptor = socket(AF_INET, SOCK_STREAM, 0);
+bind(socket_descriptor, &socket_address, sizeof(socket_address));
+\end{verbatim}
+
+The special symbol \texttt{INADDR\_ANY} is used to indicate that the server should accept connections on any address that the host might have. This is important if, for example, the server runs on a host with more than one network interface (and hence more than one address). I assume above that \texttt{sp} is a pointer to a \texttt{struct servent} that was returned from \texttt{getservbyname()}. The \texttt{bind()} system call associates a particular port to the socket. It will return $-1$ if there is an error binding the socket. You should check for that.
+
+\subsubsection{Handling connections}
+
+Once the socket has been created and bound to the appropriate port, the server must listen on that socket and then enter a loop to accept connections.
+
+\begin{verbatim}
+listen(socket_descriptor, 32);
+
+while (1) {
+  struct sockaddr_in from;
+  int new_socket;
+  
+  memset(&from, 0, sizeof(struct sockaddr_in));
+  socklen_t length = sizeof(struct sockaddr_in);
+
+  if ((new_socket = accept(socket_descriptor, &from, &length)) < 0) {
+    perror("Error during accept");
+    continue;
+  }
+  
+  // Fork a child.
+  if (fork() == 0) {
+
+    // In the child service the connection.
+    close(socket_descriptor);
+    service_connection(new_socket, &from);
+    close(new_socket);
+    exit(0);
+  }
+
+  // The parent process closes it's socket and loops back.
+  close(new_socket);
+}
+\end{verbatim}
+
+Normally the server stays blocked on the call to \texttt{accept()}. When a connection request arrives, \texttt{accept()} returns with the socket descriptor of a dynamically allocated socket. The server then forks a copy of itself. The child closes its handle to the listening socket and services the client. I assume that the function \texttt{service\_connection} handles the client interaction. It gets the descriptor of the socket and the address of the client as parameters. It needs the client address for log or security purposes. The socket it has been given is already open and the connection already established.
+
+As soon as the client has been serviced, the child process exits. In the meantime the parent process closes its handle to the new socket (the child inherited that handle as well) and loops back right away to deal with any other connection requests that arrive. Many connections can be active at once; each connection has it's own child process to service it. A server designed in this way is often called a ``concurrent server.'' In contrast a server could be designed that didn't attempt to call \texttt{accept()} until after it has fully serviced the previous connection. Such a server is called an ``iterative server.'' Iterative servers have a simpler design, but are only suitable when the time required to service a connection is short and not dependent on the client's behavior (or else the client could delay the server indefinitely and prevent other clients from receiving any service). The \texttt{accept()} function will only buffer a very minimal number of connections (see the \texttt{listen()} manual page for the details).
+
+\subsubsection{Zombie Management}
+
+In Unix each process returns an integer ``exit status'' to its parent when it terminates. A process can use this exit status to send a success or failure indication back to the parent. Since the parent might be busy with other work when a child terminates, the kernel must store the child's exit status in a kernel data structure until such time as the parent requests it. A child that has terminated but for which its exit status has not been read by the parent is said to be a \newterm{zombie}.
+
+A zombie process is technically dead. All of its memory resources have been reclaimed and it does not execute. Only its exit status and its process ID number are retained. However, if zombies accumulate on your system it is a problem. In the extreme case the zombies will consume all the process ID numbers that are available\footnote{This is more likely in a system like standard Linux where process ID numbers are 16~bits.} and when that happens, your system won't be able to create any new processes. Thus the outline for the concurrent server shown above suffers from a serious problem: the parent process never reads the exit status of it terminated children and thus a new zombie is created for each clent connection.
+
+There are various ways to prevent the accumlation of zombies. The most portable way involves handling the SIGCHLD signal. Each time a child process terminates the kernel sends the parent a SIGCHLD signal. By default the parent ignores this signal. However, using the signal handling functions you can configure the parent process to execute a particular function whenever SIGCHLD is received. Inside this function you must read the exit status of your dead children, thus cleaning them up.
+
+Signal handling is a big topic. However, the code needed to initialize SIGCHLD handling the way you would need in a simple server looks something like
+
+\begin{verbatim}
+#include <signal.h>
+...
+
+int main(int argc, char **argv)
+{
+  struct sigaction action;
+  ...
+  
+  action.sa_handler = SIGCHLD_handler;
+  sigemptyset(&action.sa_mask);
+  action.sa_flags = 0;
+  sigaction(SIGCHLD, &action, NULL);
+  ...
+}
+\end{verbatim}
+
+The most important operation is the call to \texttt{sigaction()}. This function defines how the given signal will be handled. The contents of the \texttt{action} structure specify what action the process should take when \texttt{SIGCHLD} is received. In the \texttt{sigaction} structure the \texttt{sa\_handler} field contains a pointer to a function that will handle the signal. The \texttt{sa\_mask} field is a bit mask that specifies which signals are allowed to interrupt the signal handling function. The \texttt{sa\_flags} field defines a number of options that can be applied to the handling of the signal.
+
+The signal handling function itself should look something like
+
+\begin{verbatim}
+#include <sys/wait.h>
+
+void SIGCHLD_handler(int signal_number)
+{
+  int status;
+  while (waitpid((pid_t)-1, &status, WNOHANG) > 0) ;
+}
+\end{verbatim}
+
+This function calls \texttt{waitpid()} in a loop as long as it returns the process id number of a terminated child. The status of that child is placed in \texttt{status} where it is ignored. The $-1$ argument to \texttt{waitpid()} means that we are interested in any of our children, and not just a specific child. The \texttt{WNOHANG} option means that we want \texttt{waitpid()} to return at once even if there are no terminated children. This means that the loop will pick up the exit status of all terminated children in the case where there is more than one, and yet not block indefinitely when there are no terminated children left.
+
+It is instructive to consider what happens when a child terminates after the loop above ends, but before \texttt{SIGCHLD\_handler} returns. The SIGCHLD signal generated by the terminating child is not delivered to the process until the handler returns because a signal is blocked from interrupting its own handler (regardless of the setting of \texttt{sa\_mask} in the \texttt{sigaction} structure). Thus when the handler returns, it will be re-entered immediately and the exit status of the new child will be collected. Similarly if a child terminates while the loop in the handler is running, that child's exit status will be picked up right away. However, the handler will get re-entered anyway since the signal generated by that child was blocked until the handler returned. In this case when the handler is re-entered there is no zombie and the first call to \texttt{waitpid()} returns at once (because of \texttt{WNOHANG}) with a value of $0$. This simple looking function is much more subtle than it first appears!
+
+There is one more detail to take into account. System calls that can block indefinitely will typically return with \texttt{errno} set to \texttt{EINTR}\footnote{``Interrupted''} after a single handler returns. The reason for this is that the signal may have changed the state of the program in some important way and it would be desirable to ``escape'' from the blocking system call so the program can do something different if necessary. It happens that \texttt{accept()} is a system call that might block indefinitely and so it is affected by this behavior. This means the call to \texttt{accept()} has to be put into a loop
+
+\begin{verbatim}
+while ((new_socket = accept(socket_descriptor, &from, &length)) < 0) {
+  if (errno != EINTR) {
+    perror("Error during accept");
+  }
+}
+\end{verbatim}
+
+If \texttt{accept()} returns the \texttt{EINTR} error code, it can be ignored and \texttt{accept} called again immediately. Otherwise \texttt{accept()} either returned a real error or it returned a valid socket handle to a new client.
+
+If your Unix supports the X/Open System Interfaces Extension, there are easier ways to handle zombies. In the \texttt{sa\_flags} field of the \texttt{sigaction} structure you can use the \texttt{SA\_RESTART} flag to tell the kernel you want system calls to be ``restarting'' after the handler for this signal returns. This means that \texttt{accept()} won't return \texttt{EINTR} and the loop above can be eliminated. You can also use the \texttt{SA\_NOCLDWAIT} flag with SIGCHLD to tell the kernel that you are uninterested in the exit status of your children and to not create zombies at all. This allows you to eliminate the signal handling function entirely (use \texttt{SIG\_IGN} as the value of \texttt{sa\_handler} in that case). This is obviously much easier but it is not portable to systems that only support the minimal POSIX standard.
+
+\end{document}

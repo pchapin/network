@@ -1,0 +1,57 @@
+
+CIS-3152, Network Programming, Final Exam
+==========================================
+
+This is a take home final exam. You can use as much time as you want to answer the following
+questions. You may consult class notes, your text book, or other on-line sources. If you use
+materials other than those presented in class or in the text book, please note your source in
+your answer. You are also allowed (even encouraged) to make use of the C or Java compilers. You
+may NOT consult with other students, or post questions on public forums or mailing lists. If you
+need clarification (or would like a hint) about any question please email me. Return this exam
+via email or Moodle by 11:55pm, Friday, May 8, 2015. The exam is worth 50 points.
+
+Good luck and enjoy!
+
+0. The call to connect in a typical sockets based TCP program uses a second argument that looks
+   like '(struct sockaddr *) &server_address' where server_address is a struct sockaddr_in. Why
+   is the type conversion necessary? In other words: why wasn't connect declared to take a
+   struct sockaddr_in * in the first place?
+
+
+1. Under what conditions would it be appropriate to use an iterative TCP server instead of a
+   concurrent one?
+
+
+2. Under what conditions would it be appropriate to use UDP rather thatn TCP when implementing a
+   service?
+
+
+3. Outline the steps necessary to convert a C program using IPv4 to one using IPv6. Assume you
+   don't need to worry about supporting both protocols.
+
+
+4. What is the "byte order mark" and what is its purpose?
+
+
+5. What are the bytes (in hex) of the UTF-8 string "=α="? Note that the character between the
+   equals sign is the lower case greek letter alpha. You can look up its Unicode code point
+   (http://www.unicode.org).
+
+
+6. Classic SMTP is said to be a "stop and wait" protocol. What does this mean and what is bad
+   about it?
+
+
+7. What's the difference between a MIME Content-Transfer-Encoding of "8bit" and a Content-
+   Transfer-Encoding of "binary?" Justify your answer with an appropriate reference to RFC-2045.
+
+
+8. RPC systems are supposed to make programming over the network easier by hiding the network.
+   However, this hiding is always imperfect. Why?
+
+
+9. Suppose you wanted to write an RPC server that managed a simple database. Your server is to
+   provide a object with a method named update_account that takes a name as an arbitrary string,
+   an account ID number as a 32 bit integer, and a new balance value as two 32 bit integers (one
+   for dollars and the other for cents). Show a slice specification that captures these
+   requirements.

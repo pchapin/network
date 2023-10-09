@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+  <title>CIS-3152 Homework #5</title>
+  <meta content="Peter C. Chapin" name="author" />
+</head>
+
+<body>
+<h1>CIS-3152 Homework #5 (SMTP)</h1>
+
+<p><i>Due: Friday, March 16, 2012</i></p>
+
+<p>This homework covers the SMTP protocol. Read over RFC-5321 (SMTP). This RFC is relatively
+  long so don't attempt to read every word (unless you've got a lot of extra time on your hands
+  and want to become a mail guru). You should, however, at least skim over the document and get
+  a sense of what is in it. Read a few interesting looking parts---particularly anything that
+  looks familiar from class.</p>
+
+<ol>
+  <li><p>Classic SMTP is a stop and wait protocol. Stop and wait protocols are normally very
+    inefficient on high latency networks. (Why?) RFC-2920 defines an SMTP extension called
+    "pipelining" that clients and servers can use to enhance SMTP performance on such networks.
+    However, pipelining will not significantly speed up every SMTP transaction. In what
+    situations would SMTP pipelining be a real help? In what situations would it not make much
+    difference?</p></li>
+
+  <li><p>What does the SMTP command "VRFY" do? In which section(s) of RFC-5321 did you find this
+    information?</p></li>
+
+  <li><p>In some cases an SMTP server may reply to a client query with a multiline reply.
+    Describe exactly the format these multiline replies must use. In which section(s) of
+    RFC-5321 is this format specified?</p></li>
+
+  <li><p>Show a client side SMTP state diagram similar to the one you used in lab for the server
+    side.</p></li>
+
+</ol>
+<hr style="width: 100%; height: 2px;" />
+<address>
+  © Copyright 2012 by <a href="mailto:PChapin@vtc.vsc.edu">Peter C. Chapin</a><br/>
+  Last Revised: 2012-03-08 
+</address>
+</body>
+</html>
