@@ -1,16 +1,10 @@
-/****************************************************************************
-FILE   : dtserver.c
-SUBJECT: Implementation of an iterative daytime server in C.
+/*!
+ * \file  dtserver.c
+ * \brief Implementation of a simple daytime server in C.
+ * \author Peter Chapin
+ */
 
-Please send comments or bug reports to
-
-     Peter C. Chapin
-     Computer Information Systems
-     Vermont Technical College
-     Williston, VT 05495
-     pchapin@vtc.edu
-****************************************************************************/
-
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,9 +12,7 @@ Please send comments or bug reports to
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#ifndef S_SPLINT_S    // Workaround for splint.
 #include <unistd.h>
-#endif
 
 #define BUFFER_SIZE 128
 
@@ -33,12 +25,11 @@ int main( int argc, char **argv )
     struct sockaddr_in  client_address;      // Stores address of client.
     socklen_t           client_length;       // Size of client_address structure.
     char                buffer[BUFFER_SIZE]; // General purpose buffer.
-    size_t              buffer_length;       // Number of characters in buffer.
-    time_t              ticks;               // Current time.
 
     // Do we have an explicit port address? If so, override the default.
+    // TODO: Add error handling to ensure the port number is valid.
     if( argc == 2 ) {
-        port = atoi( argv[1] );
+        port = (unsigned short)atoi( argv[1] );
     }
 
     // Create the server socket as an IPv4 TCP socket.
@@ -86,11 +77,22 @@ int main( int argc, char **argv )
             printf( "Accepted client connection from: %s\n", buffer );
 
             // Perform the requested service. (Send the current time of day)
-            ticks = time( NULL );
+            time_t ticks = time( NULL );
             snprintf( buffer, BUFFER_SIZE, "%.24s\r\n", ctime( &ticks ) );
-            buffer_length = strlen( buffer );
-            if( write( connection_handle, buffer, buffer_length ) != buffer_length ) {
-                perror( "Write failed" );
+            size_t buffer_length = strlen( buffer );
+
+            // Send the response to the client.
+            // It is necessary to do this in a loop to ensure the entire response is sent.
+            size_t total = 0;
+            while( total < buffer_length ) {
+                ssize_t length_written = write( connection_handle, buffer + total, buffer_length - total );
+                if( length_written == -1 ) {
+                    // Checking for EINTR is overkill for this program, but we'll want to deal with it later.
+                    if( errno == EINTR ) continue; // Retry if interrupted.
+                    perror( "Write failed" );
+                    break;
+                }
+                total += (size_t)length_written;
             }
 
             // Close this connection.

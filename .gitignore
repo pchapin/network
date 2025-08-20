@@ -1,0 +1,78 @@
+# This .gitignore was suggested by ChatGPT for doing C programming on Unix.
+
+# Compiled object files
+*.o
+*.lo
+*.slo
+
+# Precompiled headers
+*.gch
+*.pch
+
+# Libraries
+*.a
+*.la
+*.so
+*.so.*
+*.dylib
+*.dll
+
+# Executables
+a.out
+*.out
+*.exe
+
+# Debug / profiling files
+*.dSYM/
+*.prof
+gmon.out
+
+# Autotools
+Makefile.in
+Makefile
+/aclocal.m4
+/autom4te.cache
+/compile
+/config.guess
+/config.log
+/config.status
+/config.sub
+/configure
+/depcomp
+/install-sh
+/libtool
+/missing
+/stamp-*
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+
+# Meson
+/build/
+meson-logs/
+meson-private/
+
+# pkg-config
+*.pc
+
+# Editor files
+*~
+*.swp
+*.swo
+*.tmp
+*.bak
+
+# Tag files
+tags
+TAGS
+
+# Logs
+*.log
+
+# Core dumps
+core
+core.*
