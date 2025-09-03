@@ -1,6 +1,6 @@
 /*!
  * \file echoserver.c
- * \author Peter C. Chapin <pchapin@vtc.edu>
+ * \author Peter Chapin
  * \brief Implementation of a concurrent echo server in C.
  */
 
@@ -14,13 +14,11 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#ifndef S_SPLINT_S    // Workaround for splint.
 #include <unistd.h>
-#endif
 
 #define BUFFER_SIZE 128
 
-void SIGCHLD_handler( int signal_number )
+void SIGCHLD_handler( int __attribute__((unused)) signal_number )
 {
     int status;
     while( waitpid( -1, &status, WNOHANG ) > 0 ) /* null */ ;
@@ -41,8 +39,9 @@ int main( int argc, char **argv )
     pid_t               child_id;            // Process ID number of a child process.
 
     // Do we have an explicit port address? If so, override the default.
+    // TODO: Add error handling to ensure the port number is valid.
     if( argc == 2 ) {
-        port = atoi( argv[1] );
+        port = (unsigned short)atoi( argv[1] );
     }
 
     // Create the server socket as an IPv4 TCP socket.
@@ -104,8 +103,9 @@ int main( int argc, char **argv )
 
             // Perform the requested service. (echo the received data back to the client)
             // TODO: What should be done about possible deadlock between client and server?
+            // TODO: Handle errors returned from `read` and `write`.
             while( ( buffer_length = read( connection_handle, buffer, BUFFER_SIZE ) ) > 0 ) {
-                write( connection_handle, buffer, buffer_length );
+                write( connection_handle, buffer, (size_t)buffer_length );
             }
             close( connection_handle );
             exit( EXIT_SUCCESS );

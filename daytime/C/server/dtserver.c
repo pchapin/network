@@ -1,7 +1,7 @@
 /*!
  * \file  dtserver.c
- * \brief Implementation of a simple daytime server in C.
  * \author Peter Chapin
+ * \brief Implementation of a simple daytime server in C.
  */
 
 #include <errno.h>

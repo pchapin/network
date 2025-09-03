@@ -1,6 +1,6 @@
 /*!
  * \file echoclient.c
- * \author Peter C. Chapin <pchapin@vtc.edu>
+ * \author Peter Chapin
  * \brief Implementation of an echo client in C.
  */
 
@@ -10,9 +10,7 @@
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#ifndef S_SPLINT_S    // Workaround for splint.
 #include <unistd.h>
-#endif
 
 #define BUFFER_SIZE 128
 
@@ -31,8 +29,9 @@ int main( int argc, char **argv )
     }
 
     // Do we have an explicit port number? If so, override the default.
+    // TODO: Add error handling to ensure the port number is valid.
     if( argc == 3 ) {
-        port = atoi( argv[2] );
+        port = (unsigned short) atoi( argv[2] );
     }
 
     // Create a socket.
@@ -61,7 +60,10 @@ int main( int argc, char **argv )
     // Keep reading user input and sending it to the server.
     printf( "> " );
     while( fgets( buffer, BUFFER_SIZE, stdin ) != NULL ) {
+
+        // TODO: Deal with partial writes.
         write( socket_handle, buffer, strlen( buffer ) );
+
         while( ( count = read( socket_handle, buffer, BUFFER_SIZE - 1 ) ) > 0 ) {
             buffer[count] = '\0';
             fputs( buffer, stdout );

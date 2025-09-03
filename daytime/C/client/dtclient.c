@@ -1,7 +1,7 @@
 /*!
  * \file  dtclient.c
- * \brief Implementation of a simple daytime client in C.
  * \author Peter Chapin
+ * \brief Implementation of a simple daytime client in C.
  */
 
 #include <stdio.h>
