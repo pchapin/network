@@ -1,0 +1,5 @@
+# Visual Studio artifacts.
+.vs
+Debug
+Release
+*.user
