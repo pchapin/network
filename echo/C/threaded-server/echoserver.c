@@ -1,7 +1,7 @@
 /*!
  * \file echoserver.c
- * \author Peter C. Chapin <pchapin@vtc.edu>
- * \brief Implementation of a multi-threaded concurrent echo server in C.
+ * \author Peter Chapin
+ * \brief Implementation of a multi-threaded echo server in C.
  */
 
 #include <signal.h>
@@ -13,9 +13,7 @@
 #include <pthread.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#ifndef S_SPLINT_S    // Workaround for splint.
 #include <unistd.h>
-#endif
 
 #define BUFFER_SIZE 128
 #define PID_FILE    "dtserver.pid"
@@ -38,11 +36,10 @@ struct ConnectionParameters {
  * can be used in scripts to easily determin the server's ID (for example to send it a signal).
  * There is no indication if this function fails to create the PID file.
  *
- * \todo If a PID file exists already that suggests either a) the previous server crashed, or
- * b) the previous server is still running. Either way some sort of special action should be
- * taken.
+ * \todo If a PID file exists already that suggests either a) the previous server crashed, or b)
+ * the previous server is still running. Either way some sort of special action should be taken.
  */
-static void create_pid_file( )
+static void create_pid_file( void )
 {
     pid_t  my_process = getpid( );
     FILE  *pid_file;
@@ -56,24 +53,25 @@ static void create_pid_file( )
 
 //! Provides service for a single client.
 /*!
- * This function is called in a separate detached thread for each client. It does not return
- * any indication of its success or failure, nor does it attempt to log anything. This function
- * does close the client connection when it is finished with it.
+ * This function is called in a separate detached thread for each client. It does not return any
+ * indication of its success or failure, nor does it attempt to log anything. This function does
+ * close the client connection when it is finished with it.
  *
  * \param arg A pointer to a ConnectionParameters structure containing information about the
  * particular client connection to be serviced. This structure must be dynamically allocated.
  * This function takes responsibility for deallocating the structure.
  */
-static /*@null@*/ void *service_connection( /*@only@*/ void *arg )
+static void *service_connection( void *arg )
 {
     char    buffer[BUFFER_SIZE]; // General purpose buffer.
     ssize_t buffer_length;       // Number of characters in buffer.
     struct  ConnectionParameters *parameters = (struct ConnectionParameters *)arg;
 
     // Perform the requested service. (echo the received data back to the client)
+    // TODO: Add error handling and deal with partial writes.
     // TODO: What should be done about possible deadlock between client and server?
     while ((buffer_length = read(parameters->connection_handle, buffer, BUFFER_SIZE)) > 0) {
-        write(parameters->connection_handle, buffer, buffer_length);
+        write(parameters->connection_handle, buffer, (size_t)buffer_length);
     }
 
     // Close this connection.
@@ -92,7 +90,7 @@ static /*@null@*/ void *service_connection( /*@only@*/ void *arg )
  * to listen for new connections. This function does not free() this structure; if that is
  * needed the caller must do it.
  */
-static /*@null@*/ void *handle_clients( /*@only@*/ void *arg )
+static void *handle_clients( void *arg )
 {
     struct sockaddr_in  client_address;      // Stores address of client.
     socklen_t           client_length;       // Size of client_address structure.
@@ -154,8 +152,9 @@ int main( int argc, char **argv )
     struct ListenParameters *parameters;
 
     // Do we have an explicit port address? If so, override the default.
+    // TODO: Add error handling to ensure the port number is valid.
     if( argc == 2 ) {
-        port = atoi( argv[1] );
+        port = (unsigned short)atoi( argv[1] );
     }
 
     // Create the server socket as an IPv4 TCP socket.

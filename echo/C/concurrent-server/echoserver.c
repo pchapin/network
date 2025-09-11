@@ -18,7 +18,7 @@
 
 #define BUFFER_SIZE 128
 
-void SIGCHLD_handler( int __attribute__((unused)) signal_number )
+static void SIGCHLD_handler( int __attribute__((unused)) signal_number )
 {
     int status;
     while( waitpid( -1, &status, WNOHANG ) > 0 ) /* null */ ;
