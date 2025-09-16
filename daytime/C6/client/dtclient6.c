@@ -1,15 +1,8 @@
-/*****************************************************************************
-FILE   : dtclient6.c
-SUBJECT: Implementation of a simple daytime client in C for IPv6.
-
-Please send comments or bug reports to
-
-     Peter C. Chapin
-     Computer Information Systems
-     Vermont Technical College
-     Williston, VT
-     pchapin@vtc.edu
-*****************************************************************************/
+/*!
+ * \file  dtclient6.c
+ * \author Peter Chapin
+ * \brief Implementation of a simple daytime client for IPv6 in C.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,16 +10,14 @@ Please send comments or bug reports to
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#ifndef S_SPLINT_S    // Workaround for splint.
 #include <unistd.h>
-#endif
 
 #define BUFFER_SIZE 128
 
 int main( int argc, char **argv )
 {
     int                 socket_handle;
-    int                 count;
+    ssize_t             count;
     char                buffer[BUFFER_SIZE];
     struct sockaddr_in6 server_address;
     unsigned short      port = 13;
@@ -38,8 +29,9 @@ int main( int argc, char **argv )
     }
 
     // Do we have an explicit port number? If so, override the default.
+    // TODO: Add error handling to ensure the port number is valid.
     if( argc == 3 ) {
-        port = atoi( argv[2] );
+        port = (unsigned short)atoi( argv[2] );
     }
 
     // Create a socket.

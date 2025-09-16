@@ -1,15 +1,8 @@
-/*****************************************************************************
-FILE   : dtserver6.c
-SUBJECT: Implementation of an iterative daytime server in C for IPv6.
-
-Please send comments or bug reports to
-
-     Peter C. Chapin
-     Computer Information Systems
-     Vermont Technical College
-     Williston, VT
-     pchapin@vtc.edu
-*****************************************************************************/
+/*!
+ * \file  dtserver6.c
+ * \author Peter Chapin
+ * \brief Implementation of a simple daytime server for IPv6 in C.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,9 +11,7 @@ Please send comments or bug reports to
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#ifndef S_SPLINT_S    // Workaround for splint.
 #include <unistd.h>
-#endif
 
 #define BUFFER_SIZE 128
 
@@ -37,8 +28,9 @@ int main( int argc, char **argv )
     time_t              ticks;
 
     // Do we have an explicit port address?
+    // TODO: Add error handling to ensure the port number is valid.
     if( argc == 2 ) {
-        port = atoi( argv[1] );
+        port = (unsigned short)atoi( argv[1] );
     }
 
     // Create the server socket as an IPv6 TCP socket.

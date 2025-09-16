@@ -1,3 +1,8 @@
+/*!
+ * \file  lookmeup.c
+ * \author Peter Chapin
+ * \brief Implementation of a simple hostname lookup client in C.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
