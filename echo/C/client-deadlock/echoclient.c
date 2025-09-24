@@ -1,6 +1,6 @@
 /*!
  * \file echoclient.c
- * \author Peter C. Chapin <pchapin@vtc.edu>
+ * \author Peter Chapin
  * \brief Implementation of an echo client in C.
  *
  * This version illustrates the deadlock problem that can arise.
@@ -12,14 +12,12 @@
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#ifndef S_SPLINT_S    // Workaround for splint.
 #include <unistd.h>
-#endif
 
 // Adjust the buffer size to explore when deadlock starts happening.
 #define BUFFER_SIZE 1000000
 
-char buffer[BUFFER_SIZE];
+static char buffer[BUFFER_SIZE];
 
 int main( int argc, char **argv )
 {
@@ -37,8 +35,9 @@ int main( int argc, char **argv )
     }
 
     // Do we have an explicit port number? If so, override the default.
+    // TODO: Add error checking on the port number.
     if( argc == 3 ) {
-        port = atoi( argv[2] );
+        port = (unsigned short)atoi( argv[2] );
     }
 
     // Create a socket.
@@ -67,6 +66,7 @@ int main( int argc, char **argv )
     // Attempt to write a huge array.
     memset( buffer, 'x', BUFFER_SIZE );
     write( socket_handle, buffer, BUFFER_SIZE );
+    printf( "Wrote %d bytes to server.\n", BUFFER_SIZE );
 
     chunk_count = 0;
     byte_count  = 0;

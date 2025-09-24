@@ -1,3 +1,4 @@
 client/echoclient
+client-deadlock/echoclient
 concurrent-server/echoserver
 threaded-server/echoserver
