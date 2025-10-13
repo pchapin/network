@@ -1,9 +1,12 @@
-//-----------------------------------------------------------------------
-// FILE    : Main.java
-// SUBJECT : The main class of the MailFlux application.
-// AUTHOR  : (C) Copyright 2012 by Peter C. Chapin <PChapin@vtc.vsc.edu>
-//
-//-----------------------------------------------------------------------
+/*
+ * Copyright (C) 2025 Peter Chapin
+ *
+ * Licensed under the Apache v. 2 License. See the LICENSE file in the project root for details.
+ *
+ * File:    Main.java
+ * Purpose: The main class of the MailFlux application.
+ * Author:  Peter Chapin <spicacality@kelseymountain.org>
+ */
 package org.kelseymountain.mailflux;
 
 public class Main {

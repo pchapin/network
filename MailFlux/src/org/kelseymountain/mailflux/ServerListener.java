@@ -1,9 +1,12 @@
-//-----------------------------------------------------------------------
-// FILE    : ServerListener.java
-// SUBJECT : Class that listens for incoming client connections.
-// AUTHOR  : (C) Copyright 2012 by Peter C. Chapin <PChapin@vtc.vsc.edu>
-//
-//-----------------------------------------------------------------------
+/*
+ * Copyright (C) 2025 Peter Chapin
+ *
+ * Licensed under the Apache v. 2 License. See the LICENSE file in the project root for details.
+ *
+ * File:    ServerListener.java
+ * Purpose: Class that listens for incoming client connections.
+ * Author:  Peter Chapin <spicacality@kelseymountain.org>
+ */
 package org.kelseymountain.mailflux;
 
 import java.net.ServerSocket;

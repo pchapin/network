@@ -1,9 +1,12 @@
-//-----------------------------------------------------------------------
-// FILE    : ServerConnection.java
-// SUBJECT : Class for doing server side SMTP.
-// AUTHOR  : (C) Copyright 2012 by Peter C. Chapin <PChapin@vtc.vsc.edu>
-//
-//-----------------------------------------------------------------------
+/*
+ * Copyright (C) 2025 Peter Chapin
+ *
+ * Licensed under the Apache v. 2 License. See the LICENSE file in the project root for details.
+ *
+ * File:    ServerConnection.java
+ * Purpose: Class for doing server side SMTP.
+ * Author:  Peter Chapin <spicacality@kelseymountain.org>
+ */
 package org.kelseymountain.mailflux;
 
 import java.io.*;

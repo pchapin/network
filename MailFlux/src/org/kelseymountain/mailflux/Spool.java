@@ -1,9 +1,12 @@
-//-----------------------------------------------------------------------
-// FILE    : Spool.java
-// SUBJECT : Class that represents a message spool.
-// AUTHOR  : (C) Copyright 2013 by Peter C. Chapin <PChapin@vtc.vsc.edu>
-//
-//-----------------------------------------------------------------------
+/*
+ * Copyright (C) 2025 Peter Chapin
+ *
+ * Licensed under the Apache v. 2 License. See the LICENSE file in the project root for details.
+ *
+ * File:    Spool.java
+ * Purpose: Class that represents a message spool.
+ * Author:  Peter Chapin <spicacality@kelseymountain.org>
+ */
 package org.kelseymountain.mailflux;
 
 import java.io.*;
