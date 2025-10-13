@@ -4,7 +4,7 @@
 // AUTHOR  : (C) Copyright 2012 by Peter C. Chapin <PChapin@vtc.vsc.edu>
 //
 //-----------------------------------------------------------------------
-package org.pchapin.mailflux;
+package org.kelseymountain.mailflux;
 
 import java.net.ServerSocket;
 import java.net.Socket;

@@ -4,7 +4,7 @@
 // AUTHOR  : (C) Copyright 2012 by Peter C. Chapin <PChapin@vtc.vsc.edu>
 //
 //-----------------------------------------------------------------------
-package org.pchapin.mailflux;
+package org.kelseymountain.mailflux;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,7 +15,7 @@ import java.util.Iterator;
  * header fields in the message itself). This class allows messages to be treated abstractly.
  */
 public class Message {
-    
+
     private String sender = "";
     private ArrayList<String> recipients = new ArrayList<String>();
     private ArrayList<String> text = new ArrayList<String>();
@@ -48,7 +48,7 @@ public class Message {
             String currentRecipient = it.next();
             if (currentRecipient.equalsIgnoreCase(recipientAddress)) return;
         }
-        
+
         // Apparently not. In that case add this new one.
         recipients.add(recipientAddress);
     }
@@ -64,11 +64,11 @@ public class Message {
     {
         text.add(line);
     }
-    
+
     // ----------------
     // Accessor methods
     // ----------------
-    
+
     public String getSender()                { return sender; }
     public ArrayList<String> getRecipients() { return recipients; }
     public ArrayList<String> getText()       { return text; }

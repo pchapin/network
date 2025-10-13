@@ -1,4 +1,4 @@
-package org.pchapin.mailflux;
+package org.kelseymountain.mailflux;
 
 import java.io.*;
 import java.net.Socket;

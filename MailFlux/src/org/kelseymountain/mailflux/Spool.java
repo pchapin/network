@@ -4,7 +4,7 @@
 // AUTHOR  : (C) Copyright 2013 by Peter C. Chapin <PChapin@vtc.vsc.edu>
 //
 //-----------------------------------------------------------------------
-package org.pchapin.mailflux;
+package org.kelseymountain.mailflux;
 
 import java.io.*;
 import java.text.SimpleDateFormat;

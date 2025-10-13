@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="MailFlux" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="org.pchapin.mailflux.Main" />
+    <option name="MAIN_CLASS_NAME" value="org.kelseymountain.mailflux.Main" />
     <module name="MailFlux" />
     <method v="2">
       <option name="Make" enabled="true" />

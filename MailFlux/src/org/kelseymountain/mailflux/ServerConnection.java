@@ -4,7 +4,7 @@
 // AUTHOR  : (C) Copyright 2012 by Peter C. Chapin <PChapin@vtc.vsc.edu>
 //
 //-----------------------------------------------------------------------
-package org.pchapin.mailflux;
+package org.kelseymountain.mailflux;
 
 import java.io.*;
 import java.net.Socket;
@@ -28,7 +28,7 @@ import java.net.Socket;
  * TODO: Implement the design ideas described above.
  */
 public class ServerConnection extends Thread {
-    
+
     private Logger  logger;
     private Message currentMessage;
     private Spool   mainSpool;
@@ -107,7 +107,7 @@ public class ServerConnection extends Thread {
         }
         return line;
     }
-    
+
 
     private void doWEHLO(String incomingLine, OutputStreamWriter toClient) throws IOException
     {
@@ -283,7 +283,7 @@ public class ServerConnection extends Thread {
     {
         try {
             logger.log("Accepted client connection from: " + clientSocket.getInetAddress());
-            
+
             BufferedReader fromClient =
                     new BufferedReader(
                             new InputStreamReader(clientSocket.getInputStream(), "US-ASCII"));
