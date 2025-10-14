@@ -20,8 +20,8 @@ import java.util.Iterator;
 public class Message {
 
     private String sender = "";
-    private ArrayList<String> recipients = new ArrayList<String>();
-    private ArrayList<String> text = new ArrayList<String>();
+    private final ArrayList<String> recipients = new ArrayList<String>();
+    private final ArrayList<String> text = new ArrayList<String>();
 
     /**
      * Sets the SMTP sender of the message. Each message can have at most one sender. If
@@ -46,9 +46,7 @@ public class Message {
     public void addRecipient(String recipientAddress)
     {
         // Is this recipient already on the list?
-        Iterator<String> it = recipients.iterator();
-        while (it.hasNext()) {
-            String currentRecipient = it.next();
+        for (String currentRecipient : recipients) {
             if (currentRecipient.equalsIgnoreCase(recipientAddress)) return;
         }
 
@@ -72,7 +70,27 @@ public class Message {
     // Accessor methods
     // ----------------
 
+    /**
+     * Gets the SMTP sender address associated with this message.
+     * TODO: Review Javadoc
+     *
+     * @return The sender address as a string.
+     */
     public String getSender()                { return sender; }
+
+    /**
+     * Gets the list of SMTP recipient addresses for this message.
+     * TODO: Review Javadoc
+     *
+     * @return A mutable list of recipient addresses in the order they were added.
+     */
     public ArrayList<String> getRecipients() { return recipients; }
+
+    /**
+     * Gets the message body as a list of lines.
+     * TODO: Review Javadoc
+     *
+     * @return A mutable list of lines that comprise the message text.
+     */
     public ArrayList<String> getText()       { return text; }
 }

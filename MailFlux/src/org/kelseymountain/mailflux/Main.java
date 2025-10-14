@@ -9,7 +9,19 @@
  */
 package org.kelseymountain.mailflux;
 
+/**
+ * Entry point class for the MailFlux application.
+ * Responsible for initializing core components and starting the server listener thread.
+ * TODO: Review Javadoc
+ */
 public class Main {
+    /**
+     * Application entry point. Initializes the console and spool, starts the server listener,
+     * and waits for it to terminate.
+     * TODO: Review Javadoc
+     *
+     * @param args Command-line arguments (currently unused).
+     */
     public static void main(String[] args)
     {
         try {

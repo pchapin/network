@@ -3,6 +3,11 @@ package org.kelseymountain.mailflux;
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * Handles a single outbound SMTP client connection in its own thread.
+ * Orchestrates the SMTP dialogue to send a Message to a remote server.
+ * TODO: Review Javadoc
+ */
 public class ClientConnection extends Thread {
 
     private Logger logger;
