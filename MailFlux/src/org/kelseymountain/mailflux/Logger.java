@@ -22,5 +22,5 @@ public interface Logger {
      *
      * @param message The line of text to log. Do not include a trailing '\n'
      */
-    public void log(String message);
+    void log(String message);
 }

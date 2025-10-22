@@ -2,6 +2,7 @@ package org.kelseymountain.mailflux;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Handles a single outbound SMTP client connection in its own thread.
@@ -32,8 +33,8 @@ public class ClientConnection extends Thread {
 
         fromServer =
                 new BufferedReader(
-                        new InputStreamReader(serverSocket.getInputStream(), "US-ASCII"));
-        toServer = new OutputStreamWriter(serverSocket.getOutputStream(), "US-ASCII");
+                        new InputStreamReader(serverSocket.getInputStream(), StandardCharsets.US_ASCII));
+        toServer = new OutputStreamWriter(serverSocket.getOutputStream(), StandardCharsets.US_ASCII);
         // TODO: Fix the exception safety problem above.
     }
 
@@ -64,7 +65,7 @@ public class ClientConnection extends Thread {
     /**
      * The main method of the ClientConnection thread. This method runs the SMTP protocol from
      * the client side, aborting at the first step that indicates failure. When this method
-     * returns the connection to the server has been closed.
+     *  returns, the connection to the server has been closed.
      */
     public void run()
     {

@@ -11,6 +11,7 @@ package org.kelseymountain.mailflux;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Class for doing server side SMTP. This class interacts with a connected client and performs
@@ -289,10 +290,10 @@ public class ServerConnection extends Thread {
 
             BufferedReader fromClient =
                     new BufferedReader(
-                            new InputStreamReader(clientSocket.getInputStream(), "US-ASCII"));
+                            new InputStreamReader(clientSocket.getInputStream(), StandardCharsets.US_ASCII));
 
             OutputStreamWriter toClient =
-                    new OutputStreamWriter(clientSocket.getOutputStream(), "US-ASCII");
+                    new OutputStreamWriter(clientSocket.getOutputStream(), StandardCharsets.US_ASCII);
 
             toClient.write("220 localhost MailFlux v0.00\r\n");
             toClient.flush();

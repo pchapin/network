@@ -10,7 +10,6 @@
 package org.kelseymountain.mailflux;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Class that represents a single message. MTAs regard messages as blobs of text but they do
@@ -76,7 +75,7 @@ public class Message {
      *
      * @return The sender address as a string.
      */
-    public String getSender()                { return sender; }
+    public String getSender() { return sender; }
 
     /**
      * Gets the list of SMTP recipient addresses for this message.
@@ -92,5 +91,5 @@ public class Message {
      *
      * @return A mutable list of lines that comprise the message text.
      */
-    public ArrayList<String> getText()       { return text; }
+    public ArrayList<String> getText() { return text; }
 }
