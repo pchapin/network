@@ -1,9 +1,9 @@
-/*****************************************************************************
-FILE   : server.c
-AUTHOR : (C) Copyright 2021 by Peter Chapin <pchapin@vtc.edu>
-
-This file contains the implementation of the remote procedures.
-*****************************************************************************/
+/**
+ * FILE   : server.c
+ * AUTHOR : (C) Copyright 2025 by Peter Chapin <pchapin@vermontstate.edu>
+ *
+ * This file contains the implementation of the remote procedures.
+ */
 
 #include <string.h>
 #include <fcntl.h>

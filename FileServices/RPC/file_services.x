@@ -1,16 +1,16 @@
-/*****************************************************************************
-FILE   : file_services.x
-AUTHOR : (C) Copyright 2021 by Peter Chapin <pchapin@vtc.edu>
-
-This is a demonstration of Sun's ONC RPC that implements a simple file server.
-*****************************************************************************/
+/**
+ * FILE   : file_services.x
+ * AUTHOR : (C) Copyright 2025 by Peter Chapin <peter.chapin@vermontstate.edu>
+ *
+ * This is a demonstration of Sun's ONC RPC that implements a simple file server.
+ */
 
 /* A variable length string with a maximum size of 256. */
 typedef string filename_t<256>;
 
 /* A structure to hold the result of reading. Note that a count of zero means EOF. */
 struct readresult {
-  int    count;         /* The number of interesting bytes in the array below. */
+  int    count;
   opaque buffer[512];   /* Raw data from the file. */
 };
 

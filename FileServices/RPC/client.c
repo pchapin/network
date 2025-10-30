@@ -1,9 +1,9 @@
-/*****************************************************************************
-FILE   : client.c
-AUTHOR : (C) Copyright 2021 by Peter Chapin <pchapin@vtc.edu>
-
-This file contains a program that demonstrates calling remote procedures.
-*****************************************************************************/
+/**
+ * FILE   : client.c
+ * AUTHOR : (C) Copyright 2025 by Peter Chapin <peter.chapin@vermontstate.edu>
+ *
+ * This file contains a program that demonstrates calling remote procedures.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>

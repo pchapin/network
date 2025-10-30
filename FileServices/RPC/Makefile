@@ -2,28 +2,31 @@
 # Makefile for the file_services RPC server.
 #
 
+INCLUDES = -I/usr/include/tirpc
+LIBS = -ltirpc
+
 all:	client server
 
 client: client.o file_services_clnt.o file_services_xdr.o
-	gcc -o client client.o file_services_clnt.o file_services_xdr.o
+	gcc -o client client.o file_services_clnt.o file_services_xdr.o $(LIBS)
 
 client.o:	client.c file_services.h
-	gcc -c -Wall client.c
+	gcc $(INCLUDES) -c -Wall client.c
 
 server:	server.o file_services_svc.o file_services_xdr.o
-	gcc -o server server.o file_services_svc.o file_services_xdr.o
+	gcc -o server server.o file_services_svc.o file_services_xdr.o $(LIBS)
 
 server.o:	server.c file_services.h
-	gcc -c -Wall server.c
+	gcc $(INCLUDES) -c -Wall server.c
 
 file_services_clnt.o:	file_services_clnt.c file_services.h
-	gcc -c file_services_clnt.c
+	gcc $(INCLUDES) -c file_services_clnt.c
 
 file_services_svc.o:	file_services_svc.c file_services.h
-	gcc -c file_services_svc.c
+	gcc $(INCLUDES) -c file_services_svc.c
 
 file_services_xdr.o:	file_services_xdr.c file_services.h
-	gcc -c file_services_xdr.c
+	gcc $(INCLUDES) -c file_services_xdr.c
 
 file_services.h:	file_services.x
 	rpcgen file_services.x
