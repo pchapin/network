@@ -8,6 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="FileServices" />
-    <orderEntry type="library" name="com.zeroc:ice:3.7.5" level="project" />
+    <orderEntry type="library" name="zeroc.ice" level="project" />
   </component>
 </module>
